@@ -43,8 +43,8 @@ void uart1_handler(void)
 {
 	volatile uint8_t byte;
 
-	/* Flags will clear automatically after read from DR */
 	byte = UART1->DR;
+	UART1->SR &= ~UART_SR_RXNE_BIT;
 
 	uart_receive_callback(byte);
 }
