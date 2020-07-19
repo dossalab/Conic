@@ -16,5 +16,6 @@ objects += \
 	$(this-dir)irq.o \
 	$(this-dir)uart.o \
 	$(this-dir)gpio.o \
-	$(this-dir)system.o
+	$(this-dir)system.o \
+	$(this-dir)timer.o
 
