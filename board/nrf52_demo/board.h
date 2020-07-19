@@ -19,7 +19,7 @@
 
 /* Servos */
 #define BOARD_SERVO_1_PORT	NRF_P0
-#define BOARD_SERVO_1_PIN	1
+#define BOARD_SERVO_1_PIN	25
 
 #endif
 
