@@ -22,8 +22,15 @@ objects	:= \
 	drivers/servo.o
 
 # FIXME: is -Wno-discarded-qualifiers really a good idea?
-CFLAGS	:= -I. -Wall -Wshadow -Wno-main -Wno-discarded-qualifiers -g3 -O1
-LDFLAGS	:=
+CFLAGS	:= \
+	-Wall \
+	-Wshadow \
+	-Wno-main \
+	-Wno-discarded-qualifiers \
+	-I. -g3 -O1 \
+	-fdata-sections -ffunction-sections
+
+LDFLAGS	:= -Wl,--gc-sections
 
 include board/$(BOARD)/board.mk
 $(call check-defined, MCU, Probably you have selected unsupported board!)
