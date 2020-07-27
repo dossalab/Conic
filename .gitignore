@@ -1,3 +1,9 @@
+# C object files
 *.o
 *.elf
+
+# Byte-compiled / optimized python files
+__pycache__/
+*.py[cod]
+*$py.class
 
