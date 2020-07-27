@@ -16,7 +16,7 @@
  * Converts human-readable baudrate into int16 UBRR value
  * TODO: replace this with a more robust formula with proper integer rounding
  */
-#define AVR_BAUD(baud)		(((F_CPU / (baud * 16UL))) - 1) 
+#define AVR_BAUD(baud)		(((F_CPU / ((baud) * 16UL))) - 1)
 
 #define UART_BAUD_9600		AVR_BAUD(9600UL)
 #define UART_BAUD_14400		AVR_BAUD(14400UL)
