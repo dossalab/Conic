@@ -23,7 +23,7 @@
 void uart_on_receive(void (*receive_cb)(uint8_t byte));
 
 void uart_puts(const char *str);
-void uart_send(uint8_t *data, size_t len); 
+void uart_send(uint8_t *data, size_t len);
 void uart_printf(const char *fmt, ...);
 
 /*
@@ -37,7 +37,7 @@ void uart_printf(const char *fmt, ...);
 	void gpio_set(struct gpio *bank, int pin);
 	void gpio_clr(struct gpio *bank, int pin);
 	void gpio_toggle(struct gpio *bank, int pin);
-	
+
 	void gpio_in(struct gpio *bank, int pin);
 	void gpio_out(struct gpio *bank, int pin);
 #endif

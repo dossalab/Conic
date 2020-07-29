@@ -12,7 +12,7 @@ For now we lean tovards Arduino UNO R3 connected to a PC with a small python uti
 
 Build system is based on make. Building Conic requires some sort of bare-metal cross compiler. Since we already support 2 architectures here, you'll need `avr-gcc` for Arduno / AVR build and something like `arm-none-eabi-gcc` for ARM-based boards. To build a project, export `BOARD` enviromental variable, like `export BOARD=arduino_v1` (see boards directory for list of available boards). Then you can do `make`. conic.elf is your firmware.
 
-## Flashing / running the firmware 
+## Flashing / running the firmware
 
 You can also flash firmware using make by `make flash`.
 

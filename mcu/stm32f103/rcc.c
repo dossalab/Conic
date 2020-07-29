@@ -80,7 +80,7 @@ void rcc_setup_clocks(void)
 	/* Setup flash latency (wait states). 2 should do it for 72 Mhz */
 	FLASH->ACR &= ~(0b111 << 0);
 	FLASH->ACR |=  (0b010 << 0);
-	
+
 	/* APB1 requires 36 Mhz max. Also ADC is slow but it has its own div */
 	RCC->CFGR &= ~(0b111 << 8);
 	RCC->CFGR |=  (0b100 << 8); /* Divide by 2 */

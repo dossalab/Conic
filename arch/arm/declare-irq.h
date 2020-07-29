@@ -29,7 +29,7 @@
 #if defined(DECLARE_IRQ_ENUM)
 	#define irq_entry(nvic_no, nvic_name, handler_name) \
 		nvic_name = nvic_no,
-	
+
 	enum {
 		irq_entry_list
 	};
@@ -45,16 +45,16 @@
 				;; \
 			} \
 		} \
-	
-	irq_entry_list	
+
+	irq_entry_list
 	#undef irq_entry
 
 	/* define interrupt vector table */
 	#define irq_entry(nvic_no, nvic_name, handler_name) \
 		[nvic_name] = (uint32_t)handler_name,
-	
+
 	place_section(".mcu_isr_vectors") uint32_t mcu_isr_table[] = {
-		irq_entry_list	
+		irq_entry_list
 	};
 
 	#undef irq_entry

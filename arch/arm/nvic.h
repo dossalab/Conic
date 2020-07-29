@@ -27,7 +27,7 @@ struct nvic {
 	volatile uint32_t IABR[8];
 	volatile uint32_t __reserved_4[56];
 	volatile uint8_t IP[240];
-        volatile uint32_t __reserved_5[644U];
+	volatile uint32_t __reserved_5[644U];
 	volatile uint32_t STIR;
 };
 
