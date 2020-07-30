@@ -118,7 +118,7 @@ void timer_stop(void)
 void timer_init(void)
 {
 	/* Clear timer on OCR1A compare match (CTC) */
-	TCCR1A = (1 << WGM11);
-	TCCR1B = 0;
+	TCCR1A = 0;
+	TCCR1B = (1 << WGM12);
 }
 
