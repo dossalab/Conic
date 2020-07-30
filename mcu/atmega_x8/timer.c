@@ -89,27 +89,19 @@ void timer_on_overflow(void (*overflow_cb)(void))
 	timer_overflow_callback = overflow_cb;
 }
 
-/* XXX: do we really need atomic access here? */
+/*
+ * Note that OCR1B and OCR1A are 16-bits registers and writes to them are not
+ * atomic, and user should ensure that this functions are not used concurrently
+ * from interrupt and main thread. FIXME
+ */
 void timer_set_compare(uint16_t compare)
 {
-	volatile uint16_t ocr_value;
-
-	ocr_value = compare / OCR_DIVIDER;
-
-	__disable_irq;
-	OCR1B = ocr_value;
-	__enable_irq;
+	OCR1B = compare / OCR_DIVIDER;
 }
 
 void timer_set_overflow(uint16_t overflow)
 {
-	volatile uint16_t ocr_value;
-
-	ocr_value = overflow / OCR_DIVIDER;
-
-	__disable_irq;
-	OCR1A = ocr_value;
-	__enable_irq;
+	OCR1A = overflow / OCR_DIVIDER;
 }
 
 void timer_start(void)
