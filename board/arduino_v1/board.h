@@ -10,12 +10,20 @@
 #ifndef BOARD_ARDUINO_DEMO_H
 #define BOARD_ARDUINO_DEMO_H
 
-#define BOARD_LED_PORT	B
-#define BOARD_LED_PIN	5
-
 /* Servos */
-#define BOARD_SERVO_1_PORT	D
-#define BOARD_SERVO_1_PIN	2
+#define BOARD_SERVO_1_PORT	B
+#define BOARD_SERVO_2_PORT	B
+#define BOARD_SERVO_3_PORT	B
+#define BOARD_SERVO_4_PORT	B
+#define BOARD_SERVO_5_PORT	B
+#define BOARD_SERVO_6_PORT	B
+
+#define BOARD_SERVO_1_PIN	0
+#define BOARD_SERVO_2_PIN	1
+#define BOARD_SERVO_3_PIN	2
+#define BOARD_SERVO_4_PIN	3
+#define BOARD_SERVO_5_PIN	4
+#define BOARD_SERVO_6_PIN	5
 
 #endif
 
