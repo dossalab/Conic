@@ -41,7 +41,7 @@ static void tasks_tick_handler(void)
 	}
 }
 
-int tasks_set(int interval, void (*handler)(void), bool oneshot)
+bool tasks_set(int interval, void (*handler)(void), bool oneshot)
 {
 	__disable_irq;
 
@@ -52,7 +52,7 @@ int tasks_set(int interval, void (*handler)(void), bool oneshot)
 			t->interval = interval;
 			t->counter = interval;
 			t->oneshot = oneshot;
-			return 0;
+			return true;
 		}
 	}
 
@@ -64,13 +64,13 @@ int tasks_set(int interval, void (*handler)(void), bool oneshot)
 			t->counter = interval;
 			t->handler = handler;
 			t->oneshot = oneshot;
-			return 0;
+			return true;
 		}
 	}
 
 	__enable_irq;
 
-	return -1;
+	return false;
 }
 
 

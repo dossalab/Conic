@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 
-int tasks_set(int interval, void (*handler)(void), bool oneshot);
+bool tasks_set(int interval, void (*handler)(void), bool oneshot);
 void tasks_proceed(void);
 
 void tasks_init(void);
