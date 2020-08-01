@@ -17,14 +17,21 @@ struct list_node {
 	struct list_node *prev;
 };
 
-#define INIT_LIST_NODE(name) \
+#define LIST_INIT_NODE(name) \
 	{ \
 		.next = &(name), \
 		.prev = &(name) \
 	}
 
+/* same, but in runtime */
+static inline void list_init_node(struct list_node *node)
+{
+	node->next = node;
+	node->prev = node;
+}
+
 #define DECLARE_LIST(name) \
-	struct list_node name = INIT_LIST_NODE(name)
+	struct list_node name = LIST_INIT_NODE(name)
 
 static inline void list_insert(struct list_node *prev, \
 		struct list_node *next, struct list_node *node)
