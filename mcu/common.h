@@ -29,18 +29,14 @@ void uart_printf(const char *fmt, ...);
 /*
  * GPIO
  */
-#ifdef ARCH_avr
-	/* AVR-specific header will define this functions as macro... */
-#else
-	/* cortex-m mcu's, struct gpio is implementation-specific */
-	bool gpio_get(struct gpio *bank, int pin);
-	void gpio_set(struct gpio *bank, int pin);
-	void gpio_clr(struct gpio *bank, int pin);
-	void gpio_toggle(struct gpio *bank, int pin);
 
-	void gpio_in(struct gpio *bank, int pin);
-	void gpio_out(struct gpio *bank, int pin);
-#endif
+bool gpio_get(struct gpio *bank, int pin);
+void gpio_set(struct gpio *bank, int pin);
+void gpio_clr(struct gpio *bank, int pin);
+void gpio_toggle(struct gpio *bank, int pin);
+
+void gpio_in(struct gpio *bank, int pin);
+void gpio_out(struct gpio *bank, int pin);
 
 /*
  * At least 16 bit microsecond resolution timer
