@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 /* UART1 is clocked from APB2 which is fixed to ARM_CORE_CLK in our case */
-#define STM32_UART_CLOCK(baud)		(ARM_CORE_CLOCK / (baud))
+#define STM32_UART_CLOCK(baud)		(ARM_CORE_CLK / (baud))
 
 #define UART_BAUD_9600		STM32_UART_CLOCK(9600)
 #define UART_BAUD_14400		STM32_UART_CLOCK(14400)
