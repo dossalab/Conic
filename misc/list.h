@@ -10,6 +10,8 @@
 #ifndef MISC_LIST_H
 #define MISC_LIST_H
 
+#include <stddef.h> /* for NULL */
+
 struct list_node {
 	struct list_node *next;
 	struct list_node *prev;
@@ -52,14 +54,19 @@ static inline void list_delete(struct list_node *node)
 	node->next = NULL;
 }
 
-static inline struct list_node *list_first(struct list_node *node)
+static inline bool list_not_empty(struct list_node *head)
 {
-	return node->next;
+	return head->next != head;
 }
 
-static inline struct list_node *list_last(struct list_node *node)
+static inline struct list_node *list_first(struct list_node *head)
 {
-	return node->prev;
+	return list_not_empty(head)? head->next : NULL;
+}
+
+static inline struct list_node *list_last(struct list_node *head)
+{
+	return list_not_empty(head)? head->prev : NULL;
 }
 
 static inline bool list_next_node(struct list_node *head, \
