@@ -30,13 +30,13 @@ void uart_printf(const char *fmt, ...);
  * GPIO
  */
 
-bool gpio_get(struct gpio *bank, int pin);
-void gpio_set(struct gpio *bank, int pin);
-void gpio_clr(struct gpio *bank, int pin);
-void gpio_toggle(struct gpio *bank, int pin);
+bool gpio_get(struct gpio *bank, uint8_t pin);
+void gpio_set(struct gpio *bank, uint8_t pin);
+void gpio_clr(struct gpio *bank, uint8_t pin);
+void gpio_toggle(struct gpio *bank, uint8_t pin);
 
-void gpio_in(struct gpio *bank, int pin);
-void gpio_out(struct gpio *bank, int pin);
+void gpio_in(struct gpio *bank, uint8_t pin);
+void gpio_out(struct gpio *bank, uint8_t pin);
 
 /*
  * At least 16 bit microsecond resolution timer

@@ -15,32 +15,32 @@
 
 #include <mcu/common.h>
 
-bool gpio_get(struct gpio *bank, int pin)
+bool gpio_get(struct gpio *bank, uint8_t pin)
 {
 	return !!(bank->PIN & (1 << pin));
 }
 
-void gpio_set(struct gpio *bank, int pin)
+void gpio_set(struct gpio *bank, uint8_t pin)
 {
 	bank->PORT |= (1 << pin);
 }
 
-void gpio_clr(struct gpio *bank, int pin)
+void gpio_clr(struct gpio *bank, uint8_t pin)
 {
 	bank->PORT &= ~(1 << pin);
 }
 
-void gpio_toggle(struct gpio *bank, int pin)
+void gpio_toggle(struct gpio *bank, uint8_t pin)
 {
 	bank->PORT ^= (1 << pin);
 }
 
-void gpio_in(struct gpio *bank, int pin)
+void gpio_in(struct gpio *bank, uint8_t pin)
 {
 	bank->DDR &= ~(1 << pin);
 }
 
-void gpio_out(struct gpio *bank, int pin)
+void gpio_out(struct gpio *bank, uint8_t pin)
 {
 	bank->DDR |= (1 << pin);
 }

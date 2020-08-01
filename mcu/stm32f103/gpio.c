@@ -9,27 +9,27 @@
 
 #include <mcu/common.h>
 
-bool gpio_get(struct gpio *bank, int pin)
+bool gpio_get(struct gpio *bank, uint8_t pin)
 {
 	return !!(bank->IDR & (1 << pin));
 }
 
-void gpio_set(struct gpio *bank, int pin)
+void gpio_set(struct gpio *bank, uint8_t pin)
 {
 	bank->ODR |= (1 << pin);
 }
 
-void gpio_clr(struct gpio *bank, int pin)
+void gpio_clr(struct gpio *bank, uint8_t pin)
 {
 	bank->ODR &= ~(1 << pin);
 }
 
-void gpio_toggle(struct gpio *bank, int pin)
+void gpio_toggle(struct gpio *bank, uint8_t pin)
 {
 	bank->ODR ^= (1 << pin);
 }
 
-void gpio_in(struct gpio *bank, int pin)
+void gpio_in(struct gpio *bank, uint8_t pin)
 {
 	if (pin < 8) {
 		bank->CRL &= ~(0b1111 << 4 * pin);
@@ -40,7 +40,7 @@ void gpio_in(struct gpio *bank, int pin)
 	}
 }
 
-void gpio_out(struct gpio *bank, int pin)
+void gpio_out(struct gpio *bank, uint8_t pin)
 {
 	if (pin < 8) {
 		bank->CRL &= ~(0b1111 << 4 * pin);
@@ -55,7 +55,7 @@ void gpio_out(struct gpio *bank, int pin)
  * TODO: replace this with something like gpio_config with more parameters
  * like pullup, speed, etc...
  */
-void gpio_af(struct gpio *bank, int pin)
+void gpio_af(struct gpio *bank, uint8_t pin)
 {
 	if (pin < 8) {
 		bank->CRL &= ~(0b1100 << 4 * pin);

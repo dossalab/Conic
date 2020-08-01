@@ -30,7 +30,7 @@ struct gpio {
 #define GPIOD	((struct gpio*)GPIOD_BASE)
 
 /* Alternative functions */
-void gpio_af(struct gpio *bank, int pin);
+void gpio_af(struct gpio *bank, uint8_t pin);
 
 #endif
 
