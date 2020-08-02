@@ -11,6 +11,7 @@
 #define MISC_LIST_H
 
 #include <stddef.h> /* for NULL */
+#include <stdbool.h>
 
 struct list_node {
 	struct list_node *next;
