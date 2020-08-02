@@ -20,6 +20,7 @@
 
 /* packet size must be power of 2 for the ring to work... */
 static DECLARE_RING(input_ring, PACKET_SIZE);
+static struct task execute_packet_task;
 static volatile arch_flag_t packet_ready;
 
 static bool packet_debug_handler(struct packet *p)
@@ -99,7 +100,7 @@ void control_init(void)
 	uart_on_receive(uart_receive_handler);
 
 	/* Parse packets and execute commands every 100 ms */
-	tasks_set(100, proceed_packet, 0);
+	task_init(&execute_packet_task, proceed_packet, 100);
 
 	packet_ready = 0;
 }
