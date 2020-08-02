@@ -7,32 +7,21 @@
  * Roman Luitko, 2020
  */
 
-#include <mcu/common.h>
-#include <arch/common.h>
 #include <board/common.h>
 #include <core/control.h>
-#include <core/arm.h>
 #include <core/tasks.h>
-#include <stdint.h>
+#include <core/arm.h>
 
-int servo_pos;
-
-static void blink_led(void)
-{
-	//servo_set(NULL, servo_pos);
-	servo_pos += 100;
-	uart_printf("hi! %d\n\r", servo_pos);
-	if (servo_pos >= 2000) servo_pos = 0;
-}
+#include <mcu/common.h>
+#include <drivers/servo.h>
 
 void main(void)
 {
 	board_init();
 	control_init();
+	servo_system_init();
 	tasks_init();
 	arm_init();
-
-	tasks_set(100, blink_led, 0);
 
 	while (1) {
 		tasks_proceed();

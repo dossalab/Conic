@@ -12,11 +12,10 @@
 #include <drivers/servo.h>
 #include <misc/stuff.h>
 
-DECLARE_SERVO(servo_1, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
-DECLARE_SERVO(servo_2, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
-DECLARE_SERVO(servo_3, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
-
-static struct servo *servo_array[] = { &servo_1, &servo_2, &servo_3 };
+static struct servo servo_1;
+static struct servo servo_2;
+static struct servo servo_3;
+static struct servo servo_4;
 
 //enum units {
 //	UNITS_MM, UNITS_INCH, UNITS_RAW
@@ -91,7 +90,7 @@ static struct servo *servo_array[] = { &servo_1, &servo_2, &servo_3 };
 //			if (2 * axis->br_error >= axis->br_steps) {
 //				gpio_set(axis->gpio, axis->step_pin);
 //
-//				axis->br_counter++;    
+//				axis->br_counter++;
 //				axis->br_error -= axis->br_steps;
 //			}
 //		} else {
@@ -101,7 +100,7 @@ static struct servo *servo_array[] = { &servo_1, &servo_2, &servo_3 };
 //				axis->done = true;
 //			}
 //		}
-//	} 
+//	}
 //
 //	rising_edge = !rising_edge;
 //}
@@ -113,6 +112,14 @@ bool arm_move(float x, float y, float z, float a)
 
 void arm_init(void)
 {
-	servo_init(servo_array, ARRAY_LEN(servo_array));
+	servo_init(&servo_1, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
+	servo_init(&servo_2, BOARD_SERVO_2_PORT, BOARD_SERVO_2_PIN);
+	servo_init(&servo_3, BOARD_SERVO_3_PORT, BOARD_SERVO_3_PIN);
+	servo_init(&servo_4, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
+
+	servo_set(&servo_1, 1000);
+	servo_set(&servo_2, 1100);
+	servo_set(&servo_3, 1200);
+	servo_set(&servo_4, 1300);
 }
 
