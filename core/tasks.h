@@ -10,17 +10,20 @@
 #ifndef CORE_TASKS_H
 #define CORE_TASKS_H
 
-#include <stdbool.h>
-
-/* Should be no more than 8 because of, well, AVR */
-#define MAX_TASKS	8
-
 #include <stdint.h>
+#include <misc/list.h>
 
-bool tasks_set(int interval, void (*handler)(void), bool oneshot);
-void tasks_proceed(void);
+struct task {
+	struct list_node node;
 
-void tasks_init(void);
+	uint16_t interval;
+	uint16_t counter;
+	void (*handler)(void);
+};
+
+void task_init(struct task *t, void (*handler)(void), uint16_t interval);
+void tasks_update(void);
+void task_system_init(void);
 
 #endif
 

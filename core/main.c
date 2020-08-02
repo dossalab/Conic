@@ -20,11 +20,11 @@ void main(void)
 	board_init();
 	control_init();
 	servo_system_init();
-	tasks_init();
+	task_system_init();
 	arm_init();
 
 	while (1) {
-		tasks_proceed();
+		tasks_update();
 	}
 }
 

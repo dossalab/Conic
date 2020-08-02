@@ -9,97 +9,66 @@
 
 #include <core/tasks.h>
 #include <arch/common.h>
+#include <misc/stuff.h>
 
-static volatile arch_flag_t task_flags;
+static volatile DECLARE_LIST(task_list);
 
-volatile struct task {
-	unsigned int interval;
-	unsigned int counter;
-	void (*handler)(void);
-	bool oneshot;
-} tasks[MAX_TASKS];
+static inline struct task *node_to_task(struct list_node *node) {
+	return container_of(node, struct task, node);
+}
 
+static inline struct list_node *task_to_node(struct task *t) {
+	return &t->node;
+}
+
+/*
+ * this one is irq itself hence it does not need this __disable_irq /
+ * __enable_irq stuff
+ */
 static void tasks_tick_handler(void)
 {
-	for (int i = 0; i < MAX_TASKS; i++) {
-		volatile struct task *t = &tasks[i];
+	struct list_node *ptr;
+	struct task *t;
 
-		if (t->interval <= 0) {
-			continue;
-		}
-
-		t->counter--;
-		if (t->counter <= 0) {
-			task_flags |= (1 << i);
-
-			if (!t->oneshot) {
-				t->counter += t->interval;
-			} else {
-				t->interval = -1;
-			}
-		}
+	list_forward(ptr, &task_list) {
+		t = node_to_task(ptr);
+		t->counter++;
 	}
 }
 
-bool tasks_set(int interval, void (*handler)(void), bool oneshot)
+void task_init(struct task *t, void (*handler)(void), uint16_t interval)
 {
+	list_init_node(&t->node);
+
+	t->handler = handler;
+	t->interval = interval;
+
 	__disable_irq;
-
-	for (int i = 0; i < MAX_TASKS; i++) {
-		volatile struct task *t = &tasks[i];
-
-		if (t->handler == handler) {
-			t->interval = interval;
-			t->counter = interval;
-			t->oneshot = oneshot;
-			return true;
-		}
-	}
-
-	for (int i = 0; i < MAX_TASKS; i++) {
-		volatile struct task *t = &tasks[i];
-
-		if (t->interval <= 0) {
-			t->interval = interval;
-			t->counter = interval;
-			t->handler = handler;
-			t->oneshot = oneshot;
-			return true;
-		}
-	}
-
+	list_add_after(&task_list, task_to_node(t));
 	__enable_irq;
-
-	return false;
 }
 
-
-void tasks_proceed(void)
+void tasks_update(void)
 {
-	volatile arch_flag_t flags;
-	volatile arch_flag_t clear_flags;
+	struct list_node *ptr;
+	struct task *t;
 
 	__disable_irq;
-	flags = task_flags;
-	clear_flags = 0;
-	__enable_irq;
 
-	for (int i = 0; i < MAX_TASKS; i++) {
-		if (flags & (1 << i)) {
-			volatile struct task *t = &tasks[i];
+	list_forward(ptr, &task_list) {
+		t = node_to_task(ptr);
+
+		if (t->counter >= t->interval) {
 			t->handler();
-			clear_flags |= (1 << i);
+			t->counter = 0;
 		}
 	}
 
-	__disable_irq;
-	task_flags &= ~clear_flags;
 	__enable_irq;
 }
 
-void tasks_init(void)
+void task_system_init(void)
 {
 	arch_timer_init(tasks_tick_handler);
-	__enable_irq;
 }
 
