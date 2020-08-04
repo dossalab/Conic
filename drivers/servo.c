@@ -38,21 +38,38 @@ static void servo_overflow_handler(void)
 	}
 }
 
-/* 1-2 ms compare events */
+/*
+ * Current servo should never be null here since overflow event loads
+ * compare register only if first servo present and setups current_node
+ * according to it
+ *
+ * We also should not load next compare value if it is equal to current one,
+ * so we loop from current node to the end trying to glue same values together
+ */
 static void servo_compare_handler(void)
 {
 	struct servo *s;
+	struct list_node *ptr;
+	uint16_t current_position;
 
-	if (current_node) {
-		s = node_to_servo(current_node);
-		gpio_clr(s->port, s->pin);
+	/* Save position - all servos with the same position will be cleared */
+	s = node_to_servo(current_node);
+	current_position = s->position;
 
-		/* Load next servo */
-		if (list_next_node(&servo_list, &current_node)) {
-			s = node_to_servo(current_node);
-			timer_set_compare(s->position);
+	list_forward_from_node(ptr, current_node, &servo_list) {
+		s = node_to_servo(ptr);
+
+		/* Clear and skip duplicate */
+		if (s->position == current_position) {
+			gpio_clr(s->port, s->pin);
+			continue;
 		}
+
+		timer_set_compare(s->position);
+		break;
 	}
+
+	current_node = ptr;
 }
 
 void servo_set(struct servo *s, uint16_t position)

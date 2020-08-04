@@ -117,9 +117,9 @@ void arm_init(void)
 	servo_init(&servo_3, BOARD_SERVO_3_PORT, BOARD_SERVO_3_PIN);
 	servo_init(&servo_4, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
 
-	servo_set(&servo_1, 1000);
-	servo_set(&servo_2, 1100);
-	servo_set(&servo_3, 1200);
-	servo_set(&servo_4, 1300);
+	servo_set(&servo_1, 1500);
+	servo_set(&servo_2, 1000);
+	servo_set(&servo_3, 1000);
+	servo_set(&servo_4, 1500);
 }
 
