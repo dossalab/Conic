@@ -102,5 +102,11 @@ static inline bool list_next_node(struct list_node *head, \
 	for (ptr = (list)->prev, n = ptr->prev; ptr != (list); \
 		ptr = n, n = ptr->prev)
 
+#define list_forward_from_node(ptr, node, list) \
+	for (ptr = node; ptr != (list); ptr = ptr->next)
+
+#define list_backward_from_node(ptr, node, list) \
+	for (ptr = node; ptr != (list); ptr = ptr->prev)
+
 #endif
 
