@@ -8,6 +8,14 @@
  */
 
 #include <mcu/common.h>
+#include <misc/stuff.h>
+
+/*
+ * PIN_CNF register bits
+ */
+
+/* Connect / disconnect input buffer (0: connect, 1: disconnect) */
+#define PIN_CNF_INPUT_BIT	BIT(1)
 
 bool gpio_get(struct gpio *bank, uint8_t pin)
 {
@@ -32,7 +40,7 @@ void gpio_toggle(struct gpio *bank, uint8_t pin)
 void gpio_in(struct gpio *bank, uint8_t pin)
 {
 	/* Connect input buffer */
-	bank->PIN_CNF[pin] &= ~(1 << 1);
+	bank->PIN_CNF[pin] &= ~PIN_CNF_INPUT_BIT;
 
 	bank->DIR &= ~(1 << pin);
 }
@@ -40,7 +48,7 @@ void gpio_in(struct gpio *bank, uint8_t pin)
 void gpio_out(struct gpio *bank, uint8_t pin)
 {
 	/* Disconnect input buffer */
-	bank->PIN_CNF[pin] |= (1 << 1);
+	bank->PIN_CNF[pin] |= PIN_CNF_INPUT_BIT;
 
 	bank->DIR |= (1 << pin);
 }
