@@ -45,12 +45,21 @@
 static void (*timer_compare_callback)(void);
 static void (*timer_overflow_callback)(void);
 
-/* Timer 2 common interrupt handler */
+/*
+ * Timer 2 common interrupt handler
+ *
+ * STM32 timer is retarded - it sets compare flag even if there was no
+ * actual compare (e.g when compare value is higher than overflow value)
+ * So we need additional check here...
+ */
 void tim2_handler(void)
 {
 	/* Compare interrupt fired */
 	if (TIM2->SR & TIM_SR_CC1IF_BIT) {
-		timer_compare_callback();
+		if (TIM2->CCR[0] <= TIM2->ARR) {
+			timer_compare_callback();
+		}
+
 		TIM2->SR &= ~TIM_SR_CC1IF_BIT;
 	}
 
