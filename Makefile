@@ -27,7 +27,7 @@ CFLAGS	:= \
 	-Wshadow \
 	-Wno-main \
 	-Wno-discarded-qualifiers \
-	-I. -g3 -O1 \
+	-I. -g3 -Og \
 	-fdata-sections -ffunction-sections
 
 LDFLAGS	:= -Wl,--gc-sections
