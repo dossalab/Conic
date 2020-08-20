@@ -16,6 +16,17 @@
 
 #define SERVO_PERIOD		20000U	/* 20 ms, or 50 Hz */
 
+/*
+ * Glue servos with value less than this threshold together
+ *
+ * This value really depends on a clock rate but obviously we cannot interrupt 
+ * every microsecond and hope that mcu will be fine
+ *
+ * So we glue simular values together, still maintaining reasonable
+ * accuracy (14 us is like ~1% from typical 1000 us control pulse)
+ */
+#define SERVO_DUPLICATE_VALUE	14
+
 struct servo {
 	struct list_node node;
 	uint16_t position;

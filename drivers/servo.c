@@ -60,7 +60,7 @@ static void servo_compare_handler(void)
 		s = node_to_servo(ptr);
 
 		/* Clear and skip duplicate */
-		if (s->position == current_position) {
+		if (s->position - current_position <= SERVO_DUPLICATE_VALUE) {
 			gpio_clr(s->port, s->pin);
 			continue;
 		}
