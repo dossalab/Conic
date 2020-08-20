@@ -30,7 +30,7 @@ CFLAGS	:= \
 	-I. -g3 -Og \
 	-fdata-sections -ffunction-sections
 
-LDFLAGS	:= -Wl,--gc-sections
+LDFLAGS	:= -lm -Wl,--gc-sections
 
 include board/$(BOARD)/board.mk
 $(call check-defined, MCU, Probably you have selected unsupported board!)
@@ -63,7 +63,7 @@ all: $(out) size
 
 $(out) : $(objects)
 	@ $(ECHO) "[LD]\t$@"
-	@ $(LD) $(LDFLAGS) $^ -o $@
+	@ $(LD) $^ $(LDFLAGS) -o $@
 
 size:
 	@ $(SIZE) $(out)
