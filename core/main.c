@@ -12,6 +12,7 @@
 #include <core/tasks.h>
 #include <core/arm.h>
 
+#include <arch/common.h>
 #include <mcu/common.h>
 #include <drivers/servo.h>
 
@@ -22,6 +23,8 @@ void main(void)
 	servo_system_init();
 	task_system_init();
 	arm_init();
+
+	irq_enable();
 
 	while (1) {
 		tasks_update();

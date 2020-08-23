@@ -10,19 +10,22 @@
 #ifndef ARCH_AVR_ARCH_H
 #define ARCH_AVR_ARCH_H
 
+#include <stdint.h>
 #include <avr/interrupt.h>
 
-typedef unsigned char arch_flag_t;
+static inline void irq_enable(void)
+{
+	asm volatile ("sei" ::: "memory", "cc");
+}
 
-#define __enable_irq \
-	do { \
-		__asm volatile ("sei" ::: "memory"); \
-	} while (0);
+static inline bool irq_disable(void)
+{
+	uint8_t saved_sreg;
 
-#define __disable_irq \
-	do { \
-		__asm volatile ("cli" ::: "memory"); \
-	} while (0);
+	saved_sreg = SREG;
+	asm volatile ("cli" ::: "memory", "cc");
 
+	return !!(saved_sreg & SREG_I);
+}
 #endif
 

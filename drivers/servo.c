@@ -76,9 +76,10 @@ void servo_set(struct servo *s, uint16_t position)
 {
 	struct list_node *ptr;
 	struct servo *list_servo;
+	bool irq_was_enabled;
 	bool inserted = false;
 
-	__disable_irq;
+	irq_was_enabled = irq_disable();
 
 	list_delete(servo_to_node(s));
 	s->position = position;
@@ -98,7 +99,9 @@ void servo_set(struct servo *s, uint16_t position)
 		list_add_before(&servo_list, servo_to_node(s));
 	}
 
-	__enable_irq;
+	if (irq_was_enabled) {
+		irq_enable();
+	}
 }
 
 void servo_init(struct servo *s, struct gpio *port, uint8_t pin)

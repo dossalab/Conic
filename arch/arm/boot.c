@@ -68,7 +68,7 @@ void reset_handler(void)
 		*bss = 0x00;
 	}
 
-	__disable_irq;
+	irq_disable();
 	main();
 }
 

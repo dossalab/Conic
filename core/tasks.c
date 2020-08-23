@@ -38,22 +38,28 @@ static void tasks_tick_handler(void)
 
 void task_init(struct task *t, void (*handler)(void), uint16_t interval)
 {
-	list_init_node(&t->node);
+	bool irq_was_enabled;
 
+	list_init_node(&t->node);
 	t->handler = handler;
 	t->interval = interval;
 
-	__disable_irq;
+	irq_was_enabled = irq_disable();
+
 	list_add_after(&task_list, task_to_node(t));
-	__enable_irq;
+
+	if (irq_was_enabled) {
+		irq_enable();
+	}
 }
 
 void tasks_update(void)
 {
 	struct list_node *ptr;
 	struct task *t;
+	bool irq_was_enabled;
 
-	__disable_irq;
+	irq_was_enabled = irq_disable();
 
 	list_forward(ptr, &task_list) {
 		t = node_to_task(ptr);
@@ -64,7 +70,9 @@ void tasks_update(void)
 		}
 	}
 
-	__enable_irq;
+	if (irq_was_enabled) {
+		irq_enable();
+	}
 }
 
 void task_system_init(void)

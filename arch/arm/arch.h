@@ -10,17 +10,24 @@
 #ifndef ARCH_ARM_ARCH_H
 #define ARCH_ARM_ARCH_H
 
-#define __enable_irq \
-	do { \
-		__asm volatile ("cpsie i" ::: "memory"); \
-	} while (0);
+#include <stdint.h>
 
-#define __disable_irq \
-	do { \
-		__asm volatile ("cpsid i" ::: "memory"); \
-	} while (0);
+static inline void irq_enable(void)
+{
+	asm volatile ("cpsie i" ::: "memory", "cc");
+}
 
-typedef unsigned int arch_flag_t;
+static inline bool irq_disable(void)
+{
+	uint32_t saved_primask;
+
+	asm volatile(
+		"mrs %0, primask\n"
+		"cpsid i"
+		: "=r" (saved_primask) :: "memory", "cc");
+
+	return !saved_primask;
+}
 
 #endif
 

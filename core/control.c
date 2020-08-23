@@ -18,10 +18,9 @@
 #include <misc/crc7.h>
 #include <string.h> /* for memcpy */
 
-/* packet size must be power of 2 for the ring to work... */
-static DECLARE_RING(input_ring, PACKET_SIZE);
-static struct task execute_packet_task;
-static volatile arch_flag_t packet_ready;
+static volatile struct task execute_packet_task;
+static volatile DECLARE_RING(input_ring, PACKET_SIZE);
+static volatile bool packet_ready = false;
 
 static bool packet_debug_handler(struct packet *p)
 {
@@ -53,27 +52,29 @@ static void proceed_packet(void)
 {
 	/* volatile should tell compiler not to rearrange any code */
 	volatile struct packet in_packet;
+	bool irq_was_enabled;
 	bool ret;
 
-	if (!packet_ready) {
-		/* nothing to do here... */
-		return;
-	}
+	irq_was_enabled = irq_disable();
 
-	__disable_irq;
-	ring_copy(&input_ring, (uint8_t *)&in_packet, PACKET_SIZE);
-	__enable_irq;
+	if (packet_ready) {
+		ring_copy(&input_ring, (uint8_t *)&in_packet, PACKET_SIZE);
 
-	/* now packet is safely saved and we can somehow react to it... */
-	if (in_packet.type >= 0 && in_packet.type < PACKET_TYPE_COUNT) {
-		ret = packet_handlers[in_packet.type](&in_packet);
+		/* now packet is safely saved and we can somehow react to it... */
+		if (in_packet.type >= 0 && in_packet.type < PACKET_TYPE_COUNT) {
+			ret = packet_handlers[in_packet.type](&in_packet);
 
-		if (!ret) {
-			/* TODO: reply with NACK - unable to complete task */
+			if (!ret) {
+				/* TODO: reply with NACK - unable to complete task */
+			}
 		}
+
+		packet_ready = false;
 	}
 
-	packet_ready = 0;
+	if (irq_was_enabled) {
+		irq_enable();
+	}
 }
 
 /*
@@ -91,7 +92,7 @@ static void uart_receive_handler(uint8_t byte)
 
 	/* check if ring contains valid packet */
 	if (ring_start(&input_ring) == 0xFF && ring_end(&input_ring) == 0xFF) {
-		packet_ready = 1;
+		packet_ready = true;
 	}
 }
 
