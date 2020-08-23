@@ -14,7 +14,7 @@ ECHO	:= echo -e
 out	:= conic.elf
 objects	:= \
 	core/arm.o \
-	core/control.o \
+	core/serial.o \
 	core/main.o \
 	core/tasks.o \
 	mcu/common.o \

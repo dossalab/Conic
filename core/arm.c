@@ -8,14 +8,18 @@
  */
 
 #include <core/arm.h>
+#include <core/serial.h>
 #include <board/common.h>
 #include <drivers/servo.h>
 #include <misc/stuff.h>
+#include <misc/endian.h>
 
 static struct servo servo_1;
 static struct servo servo_2;
 static struct servo servo_3;
 static struct servo servo_4;
+
+static struct serial_handler move_packet_handler;
 
 //enum units {
 //	UNITS_MM, UNITS_INCH, UNITS_RAW
@@ -105,9 +109,16 @@ static struct servo servo_4;
 //	rising_edge = !rising_edge;
 //}
 
-bool arm_move(float x, float y, float z, float a)
+static void move_callback(void *raw_data)
 {
-	return false;
+	struct move_packet_payload *payload;
+
+	payload = raw_data;
+	payload->x = le16_to_cpu(payload->x);
+	payload->y = le16_to_cpu(payload->y);
+	payload->z = le16_to_cpu(payload->z);
+
+	/* TODO: setup move here */
 }
 
 void arm_init(void)
@@ -121,5 +132,7 @@ void arm_init(void)
 	servo_set(&servo_2, 1000);
 	servo_set(&servo_3, 1000);
 	servo_set(&servo_4, 1500);
+
+	serial_handle(&move_packet_handler, MOVE_PACKET_ID, move_callback);
 }
 

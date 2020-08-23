@@ -11,8 +11,16 @@
 #define CORE_ARM_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
-bool arm_move(float x, float y, float z, float a);
+#define MOVE_PACKET_ID			0x11
+
+struct move_packet_payload {
+	int16_t x;
+	int16_t y;
+	int16_t z;
+};
+
 void arm_init(void);
 
 #endif

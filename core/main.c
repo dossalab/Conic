@@ -8,7 +8,7 @@
  */
 
 #include <board/common.h>
-#include <core/control.h>
+#include <core/serial.h>
 #include <core/tasks.h>
 #include <core/arm.h>
 
@@ -19,7 +19,7 @@
 void main(void)
 {
 	board_init();
-	control_init();
+	serial_system_init();
 	servo_system_init();
 	task_system_init();
 	arm_init();
