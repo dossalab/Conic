@@ -9,6 +9,7 @@ ARM_RAM_LENGTH	:= 20K
 ARM_CORE_CLK	:= 72000000
 
 FLASH_CHIP	:= stm32f1x
+DEBUG_CHIP	:= stm32f1x
 
 this-dir := $(call my-dir)
 

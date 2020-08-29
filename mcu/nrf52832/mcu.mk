@@ -9,6 +9,7 @@ ARM_RAM_LENGTH	:= 0xFF20
 ARM_CORE_CLK	:= 64000000
 
 FLASH_CHIP	:= nrf52
+DEBUG_CHIP	:= nrf52
 
 this-dir := $(call my-dir)
 

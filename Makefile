@@ -75,6 +75,14 @@ flash: $(out)
 	@ $(ECHO) "[FLASH]\t$^"
 	@ scripts/flash.sh $(FLASH_CHIP) $(FLASH_ADAPTER) $<
 
+debug: $(out)
+	$(call check-defined, GDB, only gdb + openocd is supported)
+	$(call check-defined, DEBUG_CHIP, is debug supported on your chip?)
+	$(call check-defined, DEBUG_ADAPTER)
+
+	@ $(ECHO) "[DEBUG]\t$^"
+	@ scripts/debug.sh $(GDB) $(DEBUG_CHIP) $(DEBUG_ADAPTER) $<
+
 clean:
 	@ $(ECHO) "[RM]\t$(objects) $(out)"
 	@ $(RM) $(objects) $(out)
