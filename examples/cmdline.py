@@ -44,54 +44,55 @@ class App(cmd.Cmd, conic.Device):
 
     def do_connect(self, port):
         """connect [port] - connect to the conic device"""
-        if self.is_connected():
-            printer.e('device is already connected')
-            return False
-
         if not port:
             printer.e('expected port name')
             return False
 
         try:
             self.connect(port)
-        except conic.DeviceNotFoundException:
-            printer.e('unable to connect to %s!' % (port))
+        except conic.DeviceException as e:
+            printer.e(e)
 
     def do_disconnect(self, line):
         """disconnect - disconnect from the conic device"""
-        if not self.is_connected():
-            printer.e('device is not connected')
-            return False
+        try:
+            self.disconnect()
+        except conic.DeviceException as e:
+            printer.e(e)
 
-        self.disconnect()
+    def do_connected(self, line):
+        """connected - are we connected or not?"""
+        printer.i(self.is_connected())
 
     def do_move(self, line):
-        """move [x y z a] - position arm"""
-        if not self.is_connected():
-            printer.e('device is not connected')
-            return False
-
+        """move [x y z] - position arm"""
         pos = line.split()
 
-        if (len(pos) != 4):
-            printer.e('expected 4 coordinates, %d were given' % (len(pos)))
+        if (len(pos) != 3):
+            printer.e('expected 3 coordinates, %d were given' % (len(pos)))
             return False
 
-        x = float(pos[0])
-        y = float(pos[1])
-        z = float(pos[2])
-        a = float(pos[3])
+        try:
+            x = int(pos[0])
+            y = int(pos[1])
+            z = int(pos[2])
+        except ValueError:
+            printer.e('unable to parse coordinates')
+            return False
 
-        printer.i('moving arm to (%f %f %f %f)' % (x, y, z, a))
-        self.move(x, y, z, a)
+        printer.i('moving arm to (%f %f %f)' % (x, y, z))
+
+        try:
+            self.move(x, y, z)
+        except conic.DeviceException as e:
+            printer.e(e)
 
     def do_park(self, line):
         """park - position arm at park position"""
-        if not self.is_connected():
-            printer.e('device is not connected')
-            return False
-
-        self.park()
+        try:
+            self.park()
+        except conic.DeviceException as e:
+            printer.e(e)
 
     def do_exit(self, line):
         """exit - disconnect everything and exit application"""
