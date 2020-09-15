@@ -22,7 +22,7 @@ Arduino is flashed over serial bootloader, and it's impossible to tell which ser
 
 ### ARM-based boards
 
-To flash ARM-based board or, generally, non-arduino board you should set `FLASH_ADAPTER` enviromental variable, or, more easily, call make like this: `FLASH_ADAPTER=stlink make flash`. That will use STLink (available on AliExpress for 2$) adapter for flashing. `FLASH_ADAPTER` is passed directly to openocd, so consult openocd manuals for list of available adapters. If you are using older openocd, it very well may be called stlinkv2 or something like this.
+To flash ARM-based board or, generally, non-arduino board you should set `FLASH_ADAPTER` enviromental variable, or, more easily, call make like this: `FLASH_ADAPTER=stlink make flash`. That will use STLink (available on AliExpress for 2$) adapter for flashing. `FLASH_ADAPTER` is passed directly to openocd, so consult openocd manuals for list of available adapters. If you are using older openocd, it very well may be called stlink-v2 or something like this.
 
 ## Interfacing with firmware
 
