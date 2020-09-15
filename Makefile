@@ -9,7 +9,7 @@ include scripts/build.mk
 
 $(call check-defined, BOARD, See 'board' directory for available boards)
 
-ECHO	:= echo -e
+ECHO	:= printf "[%s]\t%s\n"
 
 out	:= conic.elf
 objects	:= \
@@ -58,11 +58,11 @@ CFLAGS	+= -DARCH_$(ARCH) -DMCU_$(MCU) -DBOARD_$(BOARD)
 all: $(out) size
 
 %.o : %.c
-	@ $(ECHO) "[CC]\t$@"
+	@ $(ECHO) CC "$@"
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
 $(out) : $(objects)
-	@ $(ECHO) "[LD]\t$@"
+	@ $(ECHO) LD "$@"
 	@ $(LD) $^ $(LDFLAGS) -o $@
 
 size:
@@ -72,7 +72,7 @@ flash: $(out)
 	$(call check-defined, FLASH_CHIP)
 	$(call check-defined, FLASH_ADAPTER)
 
-	@ $(ECHO) "[FLASH]\t$^"
+	@ $(ECHO) FLASH "$^"
 	@ scripts/flash.sh $(FLASH_CHIP) $(FLASH_ADAPTER) $<
 
 debug: $(out)
@@ -80,15 +80,15 @@ debug: $(out)
 	$(call check-defined, DEBUG_CHIP, is debug supported on your chip?)
 	$(call check-defined, DEBUG_ADAPTER)
 
-	@ $(ECHO) "[DEBUG]\t$^"
+	@ $(ECHO) DEBUG "$^"
 	@ scripts/debug.sh $(GDB) $(DEBUG_CHIP) $(DEBUG_ADAPTER) $<
 
 clean:
-	@ $(ECHO) "[RM]\t$(objects) $(out)"
+	@ $(ECHO) RM "$(objects) $(out)"
 	@ $(RM) $(objects) $(out)
 
 distclean: clean
-	@ $(ECHO) "[CLEAN]"
+	@ $(ECHO) CLEAN *.o
 	@ find . -type f -name '*.o' -exec rm {} \;
 
 .PHONY: all size flash debug clean distclean
