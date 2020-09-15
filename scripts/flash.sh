@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env sh
 
 #
 # Part of the Conic project - robot arm controller
