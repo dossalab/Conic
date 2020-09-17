@@ -97,56 +97,40 @@ Sinks (packet transmitters)
 class SinkException(Exception):
     pass
 
-class SinkNotOpen(SinkException):
-    pass
+class DebugSink:
+    def open(self, name):
+        pass
 
-class Sink():
-    __is_open = False
+    def is_open(self):
+        return True
+
+    def write(self, packet):
+        print('packet:', list(packet.bytes))
+
+    def close(self):
+        pass
+
+class SerialSink:
+    serial_port = serial.Serial()
 
     def open(self, name):
         try:
-            self.ll_open(name)
-            self.__is_open = True
-        except SinkException:
-            self.__is_open = False
-            raise SinkException
-
-    def is_open(self):
-        return self.__is_open
-
-    def write(self, packet):
-        if not self.is_open():
-            raise SinkNotOpen
-
-        self.ll_write(packet)
-
-    def close(self):
-        self.ll_close()
-
-class DebugSink(Sink):
-    def ll_open(self, name):
-        pass
-
-    def ll_write(self, packet):
-        print('packet:', list(packet.bytes))
-
-    def ll_close(self):
-        pass
-
-class SerialSink(Sink):
-    serial_port = serial.Serial()
-
-    def ll_open(self, name):
-        try:
             self.serial_port.setPort(name)
             self.serial_port.open()
-        except serial.SerialException:
-            raise SinkNotOpen
+        except serial.SerialException as e:
+            raise SinkException('unable to open %s' % (name))
 
-    def ll_write(self, packet):
-        self.serial_port.write(packet.bytes)
+    def is_open(self):
+        return self.serial_port.is_open
 
-    def ll_close(self):
+    def write(self, packet):
+        try:
+            self.serial_port.write(packet.bytes)
+        except serial.SerialException as e:
+            self.close()
+            raise SinkException('unable to write to sink (%s)' % (e))
+
+    def close(self):
         self.serial_port.close()
 
 """
@@ -154,9 +138,6 @@ Device logic
 """
 
 class DeviceException(Exception):
-    pass
-
-class DeviceNotFound(DeviceException):
     pass
 
 class Device():
@@ -168,17 +149,15 @@ class Device():
 
         try:
             self.sink.write(packet)
-        except SinkNotOpen:
-            raise DeviceNotFound('Device is not connected')
-        except SinkException:
-            raise DeviceException('Unable to send packet')
+        except SinkException as e:
+            raise DeviceException(e)
 
     def connect(self, port_name):
         """Connect to remote device"""
         try:
             self.sink.open(port_name)
-        except SinkException:
-            raise DeviceNotFound('Unable to connect to %s' % port_name)
+        except SinkException as e:
+            raise DeviceException(e)
 
     def disconnect(self):
         """Disconnect from the device"""
