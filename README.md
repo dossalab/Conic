@@ -29,6 +29,10 @@ To flash ARM-based board or, generally, non-arduino board you should set `FLASH_
 You can refer to python examples in `examples` folder
 For a quick demo you can call `make shell` - that will execute `examples/cmdline.py`. Also make sure you've set `SHELL_PORT`
 
+## envsetup.sh
+
+There are quite a lot of environmental variables used during the build, you may want to set all of them simultaneously. Please refer to `envsetup-sample.sh` - you can copy it to `envsetup.sh` or something, modify it according to your board and source it like that: `source ./envsetup.sh`
+
 ## Plans / thoughts
 
 We can design a small joystick-like device with a couple of knobs and buttons. As it turns out, controlling this type of robots with a special input device works much better. Also we can put a small screen on it and use this device to record movements (Position arm, press some checkpoint button, move arm to next position, press checkpoint button, etc...), and then store, share and replay them.
