@@ -83,6 +83,12 @@ debug: $(out)
 	@ $(ECHO) DEBUG "$^"
 	@ scripts/debug.sh $(GDB) $(DEBUG_CHIP) $(DEBUG_ADAPTER) $<
 
+shell: $(out)
+	$(call check-defined, SHELL_PORT)
+
+	@ $(ECHO) SHELL "$^"
+	@ examples/cmdline.py --port $(SHELL_PORT)
+
 clean:
 	@ $(ECHO) RM "$(objects) $(out)"
 	@ $(RM) $(objects) $(out)

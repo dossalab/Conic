@@ -27,6 +27,7 @@ To flash ARM-based board or, generally, non-arduino board you should set `FLASH_
 ## Interfacing with firmware
 
 You can refer to python examples in `examples` folder
+For a quick demo you can call `make shell` - that will execute `examples/cmdline.py`. Also make sure you've set `SHELL_PORT`
 
 ## Plans / thoughts
 
