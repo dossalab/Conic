@@ -12,6 +12,7 @@
 import cmd
 import conic
 import colorama
+import argparse
 from signal import signal, SIGINT
 
 class printer():
@@ -41,6 +42,12 @@ class printer():
 class App(cmd.Cmd, conic.Device):
     prompt = printer.colored('[conic] ', 'yellow')
     intro = 'Example Conic shell. Type help for available commands'
+
+    def __init__(self, args):
+        super().__init__()
+
+        if args.port:
+            self.connect(args.port)
 
     def do_connect(self, port):
         """connect [port] - connect to the conic device"""
@@ -102,9 +109,21 @@ class App(cmd.Cmd, conic.Device):
     def default(self, line):
         printer.e('\'%s\': no such command (try \'help\')' % (line))
 
+def handle_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--port', help='connect to a port on startup')
+
+    return parser.parse_args()
+
 if __name__ == '__main__':
     colorama.init()
-    app = App()
+    args = handle_args()
+
+    try:
+        app = App(args)
+    except Exception as e:
+        printer.e(e)
+        exit(1)
 
     def ctrlc_handler(signal_received, frame):
         app.disconnect()
