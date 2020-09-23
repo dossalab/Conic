@@ -7,107 +7,132 @@
  * Roman Luitko, 2020
  */
 
+#include <string.h> /* for memset */
+#include <stdlib.h> /* for abs */
+#include <math.h>
 #include <core/arm.h>
 #include <core/serial.h>
+#include <core/tasks.h>
 #include <board/common.h>
 #include <drivers/servo.h>
 #include <misc/stuff.h>
+#include <misc/linmath.h>
 #include <misc/endian.h>
 
-static struct servo servo_1;
-static struct servo servo_2;
-static struct servo servo_3;
-static struct servo servo_4;
+#define AXIS_COUNT	6
 
+struct axis {
+	int16_t start, end, delta;
+	int16_t value, error, sign;
+	struct servo servo;
+};
+
+struct motion {
+	struct axis *driving_axis;
+	struct axis axes[AXIS_COUNT];
+};
+
+/* settings are in mm */
+static vec3 current_position = mkvec3(100, 0, 0);
+static struct motion motion_logic;
+static struct task motion_tick_task;
 static struct serial_handler move_packet_handler;
 
-//enum units {
-//	UNITS_MM, UNITS_INCH, UNITS_RAW
-//};
-//
-//struct machine_axis {
-//	struct gpio_bank *gpio;
-//	int step_pin, dir_pin;
-//	int br_error, br_steps, br_counter;
-//	bool done;
-//};
-//
-//static struct machine_axis axes[] = {
-//	{ .gpio = GPIO_P0, .step_pin = 1, .dir_pin = 2 },
-//	{ .gpio = GPIO_P0, .step_pin = 3, .dir_pin = 4 },
-//	{ .gpio = GPIO_P0, .step_pin = 5, .dir_pin = 6 },
-//	{ .gpio = GPIO_P0, .step_pin = 7, .dir_pin = 8 }
-//};
-//#define AXIS_COUNT	ARRAY_LEN(axes)
-//
-//static enum units current_units = UNITS_MM;
-//static bool rising_edge = true;
-//
-//int steppers_units2steps(float units)
-//{
-//	int result;
-//
-//	switch (current_units) {
-//	case UNITS_MM:
-//		result = units * CONFIG_STEPS_PER_MM;
-//		break;
-//	case UNITS_INCH:
-//		result = units * CONFIG_STEPS_PER_MM * MM_TO_INCH;
-//		break;
-//	case UNITS_RAW:
-//		result = units;
-//		break;
-//	default:
-//		panic("Internal error: unable to determine current_units");
-//	}
-//
-//	return result;
-//}
-//
-//int steppers_move(float amount[], int count)
-//{
-//	struct machine_axis *axis;
-//
-//	if (count > AXIS_COUNT) {
-//		return -1;
-//	}
-//
-//	for (int i = 0; i < count; i++) {
-//		axis = &axes[i];
-//		axis->br_steps = steppers_units2steps(amount[i]);
-//		axis->done = false;
-//	}
-//
-//	return 0;
-//}
-//
-//void steppers_update(void)
-//{
-//	struct machine_axis *axis;
-//
-//	for (int i = 0; i < AXIS_COUNT; i++) {
-//		axis = &axes[i];
-//
-//		if (rising_edge) {
-//			axis->br_error += axis->br_steps;
-//
-//			if (2 * axis->br_error >= axis->br_steps) {
-//				gpio_set(axis->gpio, axis->step_pin);
-//
-//				axis->br_counter++;
-//				axis->br_error -= axis->br_steps;
-//			}
-//		} else {
-//			gpio_clr(axis->gpio, axis->step_pin);
-//
-//			if (axis->br_counter >= axis->br_steps) {
-//				axis->done = true;
-//			}
-//		}
-//	}
-//
-//	rising_edge = !rising_edge;
-//}
+static void motion_update(struct motion *m)
+{
+	struct axis *a;
+
+	for (int i = 0; i < AXIS_COUNT; i++) {
+		a = &(m->axes[i]);
+
+		servo_set(&a->servo, a->value);
+
+		if (a->value != a->end) {
+			a->error += a->delta;
+			if (2 * a->error >= m->driving_axis->delta) {
+				a->value += a->sign;
+				a->error -= m->driving_axis->delta;
+			}
+		}
+	}
+}
+
+static void motion_execute(struct motion *m)
+{
+	struct axis *a;
+	int max_index;
+	int16_t max_delta = -1;
+
+	for (int i = 0; i < AXIS_COUNT; i++) {
+		a = &(m->axes[i]);
+
+		a->delta = abs(a->end - a->start);
+		a->value = a->start;
+		a->error = 0;
+		a->sign = (a->end > a->start)? 1 : -1;
+
+		if (a->delta > max_delta) {
+			max_delta = a->delta;
+			max_index = i;
+		}
+	}
+
+	m->driving_axis = &(m->axes[max_index]);
+}
+
+/*
+ * For now all the calculation is hardcoded here for our specific
+ * robot configuration.
+ */
+static void point_calculate(vec3 point, float angles[static AXIS_COUNT])
+{
+	float rp, rf;
+
+	rp = sqrtf(point.x * point.x + point.y * point.y);
+	rf = sqrtf(point.x * point.x + point.y * point.y + point.z * point.z);
+
+	angles[0] = M_PI;
+	angles[1] = 0;
+	angles[2] = M_PI;
+	angles[3] = 0;
+	angles[4] = 0;
+	angles[5] = M_PI;//asinf(point.y / rp);
+}
+
+/* This is very servo-dependent... */
+static inline uint16_t angle_to_pulse(float angle)
+{
+	/* approx 400 - 2400 */
+	return 636.6f * angle + 400.f;
+}
+
+/*
+ * It's totally redundant to re-calculate both points every time here,
+ * yet we do it here. Better save angles somewhere and use them rather then
+ * re-creating last point every time
+ */
+static void motion_calculate(struct motion *m, vec3 start, vec3 end)
+{
+	float angles_end[AXIS_COUNT];
+	float angles_start[AXIS_COUNT];
+
+	point_calculate(end, angles_end);
+	point_calculate(start, angles_start);
+
+	for (int i = 0;  i < AXIS_COUNT; i++) {
+		m->axes[i].end = angle_to_pulse(angles_end[i]);
+		m->axes[i].start = angle_to_pulse(angles_start[i]);
+	}
+}
+
+static void move_from_current(struct motion *m, vec3 target_position)
+{
+	motion_calculate(m, current_position, target_position);
+	motion_execute(m);
+
+	/* TODO: We should update target position in realtime, really */
+	current_position = target_position;
+}
 
 static void move_callback(void *raw_data)
 {
@@ -118,21 +143,31 @@ static void move_callback(void *raw_data)
 	payload->y = le16_to_cpu(payload->y);
 	payload->z = le16_to_cpu(payload->z);
 
-	/* TODO: setup move here */
+	move_from_current(&motion_logic, \
+			mkvec3(payload->x, payload->y, payload->z));
+}
+
+static void motion_tick(void)
+{
+	/* TODO: We can calculate acceleration and update it here */
+	motion_update(&motion_logic);
 }
 
 void arm_init(void)
 {
-	servo_init(&servo_1, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
-	servo_init(&servo_2, BOARD_SERVO_2_PORT, BOARD_SERVO_2_PIN);
-	servo_init(&servo_3, BOARD_SERVO_3_PORT, BOARD_SERVO_3_PIN);
-	servo_init(&servo_4, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
+	struct axis *axes = motion_logic.axes;
 
-	servo_set(&servo_1, 1500);
-	servo_set(&servo_2, 1000);
-	servo_set(&servo_3, 1000);
-	servo_set(&servo_4, 1500);
+	servo_init(&axes[0].servo, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
+	servo_init(&axes[1].servo, BOARD_SERVO_2_PORT, BOARD_SERVO_2_PIN);
+	servo_init(&axes[2].servo, BOARD_SERVO_3_PORT, BOARD_SERVO_3_PIN);
+	servo_init(&axes[3].servo, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
+	servo_init(&axes[4].servo, BOARD_SERVO_5_PORT, BOARD_SERVO_5_PIN);
+	servo_init(&axes[5].servo, BOARD_SERVO_6_PORT, BOARD_SERVO_6_PIN);
+
+	/* Make a dummy move to initialize everything */
+	move_from_current(&motion_logic, mkvec3(-150, 0, 0));
 
 	serial_handle(&move_packet_handler, MOVE_PACKET_ID, move_callback);
+	task_init(&motion_tick_task, motion_tick, 100);
 }
 
