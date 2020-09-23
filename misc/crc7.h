@@ -1,5 +1,5 @@
-#ifndef LIB_CRC7_BE_H
-#define LIB_CRC7_BE_H
+#ifndef MISC_CRC7_BE_H
+#define MISC_CRC7_BE_H
 
 #include <stddef.h>
 #include <stdint.h>
