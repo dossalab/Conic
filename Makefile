@@ -23,6 +23,7 @@ objects	:= \
 
 # FIXME: is -Wno-discarded-qualifiers really a good idea?
 CFLAGS	:= \
+	-std=gnu99 \
 	-Wall \
 	-Wshadow \
 	-Wno-main \
