@@ -1,0 +1,17 @@
+language: c
+os:
+    - linux
+
+install:
+    - sudo apt-get -y install make gcc-arm-none-eabi libnewlib-arm-none-eabi
+
+jobs:
+    include:
+    - compiler: arm-none-eabi-gcc
+      env: BOARD=stm32_demo
+    - compiler: arm-none-eabi-gcc
+      env: BOARD=nrf52_demo
+
+script:
+    - make
+
