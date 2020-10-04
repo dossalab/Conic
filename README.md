@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dossalab/Conic.svg?branch=master)](https://travis-ci.org/dossalab/Conic)
+
 # Conic - robot arm firmware (WIP)
 
 This firmware should allow robotic arm to perform basic movements, controlled by UART from PC (or from external remote, may be?) This thing is by-design cross-platform, and targeted to 32-bit cortex-m microcontrollers like NRF52 or STM32, hence provide some sort of compability to old AVRs.
