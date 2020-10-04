@@ -6,6 +6,7 @@ dist: bionic
 
 install:
     - sudo apt-get -y install make gcc-arm-none-eabi libnewlib-arm-none-eabi
+    - sudo apt-get -y install gcc-avr avr-libc
 
 jobs:
     include:
@@ -13,6 +14,8 @@ jobs:
       env: BOARD=stm32_demo
     - compiler: arm-none-eabi-gcc
       env: BOARD=nrf52_demo
+    - compiler: avr-gcc
+      env: BOARD=arduino_v1
 
 script:
     - make
