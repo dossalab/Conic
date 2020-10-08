@@ -1,6 +1,8 @@
 # C object files
 *.o
 *.elf
+*.so
+*.dll
 
 # Byte-compiled / optimized python files
 __pycache__/

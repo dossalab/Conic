@@ -11,7 +11,12 @@ $(call check-defined, BOARD, See 'board' directory for available boards)
 
 ECHO	:= printf "[%s]\t%s\n"
 
-out	:= conic.elf
+$(call allow-override,HOSTCC,gcc)
+$(call allow-override,HOSTLD,gcc)
+
+elf	:= conic.elf
+lib	:= libconic$(call obtain-shared-extension, $(HOSTCC))
+
 objects	:= \
 	core/arm.o \
 	core/serial.o \
@@ -20,6 +25,9 @@ objects	:= \
 	mcu/common.o \
 	misc/crc7.o \
 	drivers/servo.o
+
+host-objects := \
+	host/libconic.o
 
 # FIXME: is -Wno-discarded-qualifiers really a good idea?
 CFLAGS	:= \
@@ -32,6 +40,13 @@ CFLAGS	:= \
 	-fdata-sections -ffunction-sections
 
 LDFLAGS	:= -lm -Wl,--gc-sections
+
+HOSTCFLAGS := \
+	-I. \
+	-Wall
+
+HOSTLDFLAGS := \
+	-shared
 
 include board/$(BOARD)/board.mk
 $(call check-defined, MCU, Probably you have selected unsupported board!)
@@ -56,27 +71,30 @@ CFLAGS	+= -DARCH_SPECIFIC_HEADER="<arch/$(ARCH)/arch.h>"
 # Export ARCH, MCU, BOARD to C preprocessor just in case...
 CFLAGS	+= -DARCH_$(ARCH) -DMCU_$(MCU) -DBOARD_$(BOARD)
 
-all: $(out) size
+all: firmware library
+
+# Firmware target (cross-compilation)
+firmware: $(elf) size
 
 %.o : %.c
 	@ $(ECHO) CC "$@"
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
-$(out) : $(objects)
+$(elf) : $(objects)
 	@ $(ECHO) LD "$@"
 	@ $(LD) $^ $(LDFLAGS) -o $@
 
 size:
-	@ $(SIZE) $(out)
+	@ $(SIZE) $(elf)
 
-flash: $(out)
+flash: $(elf)
 	$(call check-defined, FLASH_CHIP)
 	$(call check-defined, FLASH_ADAPTER)
 
 	@ $(ECHO) FLASH "$^"
 	@ scripts/flash.sh $(FLASH_CHIP) $(FLASH_ADAPTER) $<
 
-debug: $(out)
+debug: $(elf)
 	$(call check-defined, GDB, only gdb + openocd is supported)
 	$(call check-defined, DEBUG_CHIP, is debug supported on your chip?)
 	$(call check-defined, DEBUG_ADAPTER)
@@ -90,13 +108,24 @@ shell: $(out)
 	@ $(ECHO) SHELL "$^"
 	@ examples/cmdline.py --port $(SHELL_PORT)
 
+# Host target (non cross-compilation, shared)
+library: $(lib)
+
+host/%.o : host/%.c
+	@ $(ECHO) HSTCC "$@"
+	@ $(HOSTCC) $(HOSTCFLAGS) -c $< -o $@
+
+$(lib) : $(host-objects)
+	@ $(ECHO) HSTLD "$@"
+	@ $(HOSTLD) $^ $(HOSTLDFLAGS) -o $@
+
 clean:
-	@ $(ECHO) RM "$(objects) $(out)"
-	@ $(RM) $(objects) $(out)
+	@ $(ECHO) RM "$(objects) $(host-objects) $(elf) $(lib)"
+	@ $(RM) $(objects) $(host-objects) $(elf) $(lib)
 
 distclean: clean
 	@ $(ECHO) CLEAN *.o
 	@ find . -type f -name '*.o' -exec rm {} \;
 
-.PHONY: all size flash debug clean distclean
+.PHONY: all library firmware size flash debug clean distclean
 
