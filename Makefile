@@ -109,7 +109,7 @@ shell: $(out)
 	$(call check-defined, SHELL_PORT)
 
 	@ $(ECHO) SHELL "$^"
-	@ examples/cmdline.py --port $(SHELL_PORT)
+	@ host/shell.py
 
 # Host target (non cross-compilation, shared)
 library: $(lib)
