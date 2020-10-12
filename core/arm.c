@@ -18,6 +18,7 @@
 #include <misc/stuff.h>
 #include <misc/linmath.h>
 #include <misc/endian.h>
+#include <proto/messages.h>
 
 #define AXIS_COUNT	6
 
