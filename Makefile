@@ -15,7 +15,7 @@ $(call allow-override,HOSTCC,gcc)
 $(call allow-override,HOSTLD,gcc)
 
 elf	:= conic.elf
-lib	:= libconic$(call obtain-shared-extension, $(HOSTCC))
+lib	:= host/libconic$(call obtain-shared-extension, $(HOSTCC))
 
 objects	:= \
 	core/arm.o \
