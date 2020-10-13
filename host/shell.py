@@ -60,13 +60,18 @@ class Wrapper:
 
     def open(self):
         """Connect to remote device"""
+        if self.handle != -1:
+            raise WrapperException('device is already open')
+
         self.handle = self.libconic.conic_open()
         if self.handle < 0:
             raise WrapperException('unable to open device')
 
     def close(self):
         """Disconnect from the device"""
-        self.libconic.conic_close(self.handle)
+        if self.handle != -1:
+            self.libconic.conic_close(self.handle)
+            self.handle = -1
 
     def is_open(self):
         """Check device presense"""
@@ -99,6 +104,7 @@ class App(cmd.Cmd, Wrapper):
 
         try:
             self.conic.open()
+            Printer.i('Port opened successfully')
         except WrapperException as e:
             Printer.e(e)
 
