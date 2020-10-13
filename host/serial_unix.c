@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <termios.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -136,6 +137,12 @@ int serial_open(const char *port_name, int baudrate)
 	cfsetispeed(&config, baud_flags);
 
 	if (tcsetattr(handle, TCSANOW, &config) < 0) {
+		close(handle);
+		return -1;
+	}
+
+	/* Enable exclusive mode */
+	if (ioctl(handle, TIOCEXCL) == -1) {
 		close(handle);
 		return -1;
 	}
