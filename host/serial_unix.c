@@ -14,6 +14,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <dirent.h>
 
@@ -57,6 +58,7 @@ int serial_enumerate(int (*callback)(const char *))
 	DIR *dev;
 	struct dirent *node;
 	const char **base_ptr, *base;
+	char device[64];
 	int fd = -1;
 
 	dev = opendir("/dev");
@@ -72,7 +74,9 @@ int serial_enumerate(int (*callback)(const char *))
 				continue;
 			}
 
-			fd = callback(node->d_name);
+			snprintf(device, sizeof(device), "/dev/%s", node->d_name);
+
+			fd = callback(device);
 			if (fd >= 0) {
 				goto exit;
 			}
