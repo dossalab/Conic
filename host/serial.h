@@ -27,6 +27,7 @@ int serial_enumerate(int (*callback)(const char *));
 int serial_write(int handle, const uint8_t *data, size_t len);
 int serial_read(int handle, uint8_t *data, size_t len);
 int serial_open(const char *port_name, int baudrate);
+bool serial_is_open(int fd);
 void serial_close(int handle);
 
 #endif

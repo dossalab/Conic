@@ -95,6 +95,11 @@ int serial_read(int fd, uint8_t *data, size_t len)
 	return read(fd, data, len);
 }
 
+bool serial_is_open(int fd)
+{
+	return false;
+}
+
 int serial_open(const char *port_name, int baudrate)
 {
 	int handle, baud_flags;

@@ -70,15 +70,23 @@ class Wrapper:
 
     def is_open(self):
         """Check device presense"""
-        raise WrapperException('unable to check connection')
+        ret = self.libconic.conic_is_open(self.handle)
+        if ret < 0:
+            return False
+
+        return True
 
     def move(self, x, y, z):
         """Move arm to a new absolute position"""
-        raise WrapperException('unable to move')
+        ret = self.libconic.conic_move(self.handle, x, y, z)
+        if ret < 0:
+            raise WrapperException('unable to move arm')
 
     def park(self):
         """Park arm in some default, safe position"""
-        raise WrapperException('unable to park')
+        ret = self.libconic.conic_park(self.handle)
+        if ret < 0:
+            raise WrapperException('unable to park')
 
 class App(cmd.Cmd, Wrapper):
     """sample shell application - demonstrates libconic usage"""

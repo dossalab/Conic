@@ -10,6 +10,8 @@
 #ifndef PROTO_PACKET_H
 #define PROTO_PACKET_H
 
+#include <string.h> /* for memset */
+
 /*
  * 16-byte control packets
  * Payload is type-specific. Users are free to pack any data there
@@ -38,6 +40,15 @@ struct serial_packet {
 	uint8_t crc;
 	uint8_t end;
 };
+
+static inline void packet_fill(struct serial_packet *packet, uint8_t type)
+{
+	memset(packet, 0, sizeof(struct serial_packet));
+
+	packet->start = 0xFF;
+	packet->type = type;
+	packet->end = 0xFF;
+}
 
 #endif
 

@@ -132,6 +132,11 @@ int serial_read(int handle, uint8_t *data, size_t len)
 	return amount;
 }
 
+bool serial_is_open(int fd)
+{
+	return false;
+}
+
 int serial_open(const char *port_name, int baudrate)
 {
 	DCB config = {0};
