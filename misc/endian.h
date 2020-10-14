@@ -27,7 +27,7 @@ union u32_bytes {
 #define swap_endian_u16(x) \
 	(x << 8) | (x >> 8)
 
-#ifdef ARCH_LITTLE_ENDIAN
+#if defined(ARCH_LITTLE_ENDIAN)
 	#define cpu_to_le16(x) x
 	#define cpu_to_le32(x) x
 	#define cpu_to_be16(x) swap_endian_u16(x)
@@ -38,7 +38,7 @@ union u32_bytes {
 	#define be16_to_cpu(x) swap_endian_u16(x)
 	#define be32_to_cpu(x) swap_endian_u32(x)
 
-#elif ARCH_BIG_ENDIAN
+#elif defined(ARCH_BIG_ENDIAN)
 	#define cpu_to_le16(x) swap_endian_u16(x)
 	#define cpu_to_le32(x) swap_endian_u32(x)
 	#define cpu_to_be16(x) x
