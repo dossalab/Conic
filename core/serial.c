@@ -14,6 +14,7 @@
 #include <mcu/common.h>
 #include <misc/crc7.h>
 #include <misc/stuff.h>
+#include <proto/packet.h>
 
 static volatile struct task execute_packet_task;
 static volatile DECLARE_RING(input_ring, SERIAL_PACKET_SIZE);

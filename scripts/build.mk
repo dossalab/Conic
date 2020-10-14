@@ -31,3 +31,14 @@ _check-defined = \
     $(if $(value $1),, \
       $(error Undefined $1$(if $2, ($2))))
 
+# Check if we are building on mingw and produce dll in that case
+# very bad and unreliable way to tell it
+#
+# Params:
+#   1. Host GCC compiler
+obtain-shared-extension = \
+    $(if $(filter $(call gcc-target, $1), mingw32),.dll,.so)
+
+gcc-target = \
+    $(lastword $(subst -, ,$(shell $1 -dumpmachine)))
+
