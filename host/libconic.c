@@ -54,7 +54,7 @@ int API_EXPORT conic_move(int fd, int16_t x, int16_t y, int16_t z)
 	payload.z = cpu_to_le16(z);
 
 	packet_fill(&packet, MOVE_PACKET_ID);
-	memcpy(packet.data, &payload, sizeof(packet.data));
+	memcpy(packet.data, &payload, sizeof(struct move_packet_payload));
 
 	written = serial_write(fd, (const uint8_t *)&packet, sizeof(packet));
 	if (written != sizeof(packet)) {
