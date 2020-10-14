@@ -2,12 +2,13 @@
 
 # Conic - robot arm firmware (WIP)
 
-This firmware should allow robotic arm to perform basic movements, controlled by UART from PC (or from external remote, may be?) This thing is by-design cross-platform, and targeted to 32-bit cortex-m microcontrollers like NRF52 or STM32, hence provide some sort of compability to old AVRs.
+Project aims to create robotic arm that can perform operations, controlled from PC, tablet or Raspberry Pi. This is a firmware - heart of the system, code that runs on low-power embedded controller inside the robot. It is by-design cross-platform, and targeted to 32-bit cortex-m microcontrollers like NRF52 or STM32, yet provide some sort of compability to old AVRs (Arduino).
 
 ## Abstract
 
-For now we lean tovards Arduino UNO R3 connected to a PC with a small python utility controlling it. Open questions are:
-+ How to position arm? WASD or mouse or via blind coordinates?
+Hardware used inside the robot is based on STM32 blue pill (STM32F103). We use library called libconic to control device - library can be binded to any high-level language. We use python in examples and lean towards control center based on WPF or Unity (.NET / C#).
+Open questions are:
++ How to position arm? WASD or mouse or coordinates?
 + Servos need some sort of torque protection, espesially on claw. We anyway need some sort of custom shield / board to implement at least current sensing. Is it better to design a shield for a more modern board with wireless MCU like NRF52 / ESP32?
 
 ## Building the firmware
