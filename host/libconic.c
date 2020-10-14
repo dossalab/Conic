@@ -7,9 +7,13 @@
  * Roman Luitko, 2020
  */
 
+/* TODO: provide a configuration option for that */
+#define ARCH_LITTLE_ENDIAN
+
 #include <host/serial.h>
 #include <proto/messages.h>
 #include <proto/packet.h>
+#include <misc/endian.h>
 #include <string.h>
 
 #ifdef _WIN32
@@ -45,9 +49,9 @@ int API_EXPORT conic_move(int fd, int16_t x, int16_t y, int16_t z)
 	struct move_packet_payload payload;
 	int written;
 
-	payload.x = x;
-	payload.y = y;
-	payload.z = z;
+	payload.x = cpu_to_le16(x);
+	payload.y = cpu_to_le16(y);
+	payload.z = cpu_to_le16(z);
 
 	packet_fill(&packet, MOVE_PACKET_ID);
 	memcpy(packet.data, &payload, sizeof(packet.data));
