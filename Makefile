@@ -104,7 +104,7 @@ debug: $(elf)
 	@ $(ECHO) DEBUG "$^"
 	@ scripts/debug.sh $(GDB) $(DEBUG_CHIP) $(DEBUG_ADAPTER) $<
 
-shell: $(out)
+shell: $(lib)
 	$(call check-defined, SHELL_PORT)
 
 	@ $(ECHO) SHELL "$^"
