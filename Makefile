@@ -75,11 +75,9 @@ CFLAGS	+= -DARCH_SPECIFIC_HEADER="<arch/$(ARCH)/arch.h>"
 # Export ARCH, MCU, BOARD to C preprocessor just in case...
 CFLAGS	+= -DARCH_$(ARCH) -DMCU_$(MCU) -DBOARD_$(BOARD)
 
-all: firmware library
+all: $(elf) size $(lib)
 
 # Firmware target (cross-compilation)
-firmware: $(elf) size
-
 %.o : %.c
 	@ $(ECHO) CC "$@"
 	@ $(CC) $(CFLAGS) -c $< -o $@
@@ -113,8 +111,6 @@ shell: $(out)
 	@ host/shell.py
 
 # Host target (non cross-compilation, shared)
-library: $(lib)
-
 host/%.o : host/%.c
 	@ $(ECHO) HSTCC "$@"
 	@ $(HOSTCC) $(HOSTCFLAGS) -c $< -o $@
@@ -131,5 +127,5 @@ distclean: clean
 	@ $(ECHO) CLEAN *.o
 	@ find . -type f -name '*.o' -exec rm {} \;
 
-.PHONY: all library firmware size flash debug clean distclean
+.PHONY: all size flash debug clean distclean
 
