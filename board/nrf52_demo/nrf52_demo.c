@@ -25,6 +25,6 @@ void board_init(void)
 	system_ext_crystal_on();
 
 	gpio_out(BOARD_LED_PORT, BOARD_LED_PIN);
-	uart_init(BOARD_UART_TX_PIN, BOARD_UART_RX_PIN, UART_BAUD_9600);
+	uart_init(BOARD_UART_TX_PIN, BOARD_UART_RX_PIN, UART_BAUD_115200);
 }
 

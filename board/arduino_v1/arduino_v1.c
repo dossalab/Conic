@@ -22,6 +22,6 @@ void board_led_off(void)
 
 void board_init(void)
 {
-	uart_init(UART_BAUD_9600);
+	uart_init(UART_BAUD_115200);
 }
 

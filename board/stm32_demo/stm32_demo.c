@@ -32,7 +32,7 @@ static inline void board_uart_init(void)
 	gpio_af(GPIOA, 9);
 	//gpio_af(GPIOA, 10);
 
-	uart_init(UART_BAUD_9600);
+	uart_init(UART_BAUD_115200);
 }
 
 void board_init(void)
