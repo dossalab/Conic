@@ -110,8 +110,6 @@ debug: $(elf)
 	@ scripts/debug.sh $(GDB) $(DEBUG_CHIP) $(DEBUG_ADAPTER) $<
 
 shell: $(lib)
-	$(call check-defined, SHELL_PORT)
-
 	@ $(ECHO) SHELL "$^"
 	@ host/shell.py
 

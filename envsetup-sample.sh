@@ -4,5 +4,4 @@
 export BOARD=stm32_demo
 export FLASH_ADAPTER=stlink
 export DEBUG_ADAPTER=stlink
-export SHELL_PORT=/dev/ttyUSB0
 
