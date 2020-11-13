@@ -58,6 +58,6 @@ build() {
 }
 
 [ $# -ne 1 ] && print_usage
-[ $(id -u) -ne 0 ] && info "please, execute as root!" && exit 1 
+[ $(id -u) -ne 0 ] && info "please, execute as root!" && exit 1
 build $1
 
