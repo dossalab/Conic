@@ -39,7 +39,6 @@ build() {
 		info "building windows dll..."
 		docker run \
 			--mount "type=bind,src=$(pwd),dst=/tmp/build" \
-			--env "BOARD=stm32_demo" \
 			--env "HOSTCC=x86_64-w64-mingw32-gcc" \
 			--env "HOSTLD=x86_64-w64-mingw32-gcc" \
 			--workdir /tmp/build \
