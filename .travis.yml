@@ -5,8 +5,8 @@ os:
 dist: bionic
 
 install:
-    - sudo apt-get -y install make gcc-arm-none-eabi libnewlib-arm-none-eabi
-    - sudo apt-get -y install gcc-avr avr-libc
+    - sudo apt-get -y install gcc make gcc-arm-none-eabi libnewlib-arm-none-eabi
+    - sudo apt-get -y install gcc-avr avr-libc docker
 
 jobs:
     include:
@@ -16,6 +16,10 @@ jobs:
       env: BOARD=nrf52_demo
     - compiler: avr-gcc
       env: BOARD=arduino_v1
+    - script:
+          - make library
+    - script:
+          - ./docker-build.sh dll
 
 script:
     - make
