@@ -124,6 +124,18 @@ $(lib) : $(host-objects)
 	@ $(ECHO) HSTLD "$@"
 	@ $(HOSTLD) $^ $(HOSTLDFLAGS) -o $@
 
+install: $(lib)
+	install -m 644 host/libconic.so /usr/local/lib
+	install -m 644 host/libconic.h  /usr/local/include
+	install -m 644 host/libconic.pc /usr/local/lib/pkgconfig
+	ldconfig
+
+uninstall:
+	$(RM) /usr/local/lib/libconic.so
+	$(RM) /usr/local/include/libconic.h
+	$(RM) /usr/local/lib/pkgconfig/libconic.pc
+	ldconfig
+
 clean:
 	@ $(ECHO) RM "$(objects) $(host-objects) $(elf) $(lib)"
 	@ $(RM) $(objects) $(host-objects) $(elf) $(lib)
