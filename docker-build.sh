@@ -43,7 +43,7 @@ build() {
 			--env "HOSTLD=x86_64-w64-mingw32-gcc" \
 			--workdir /tmp/build \
 			--user "$(id -u $LOGNAME):$(id -g $LOGNAME)" \
-			$IMAGE_TAG library
+			$IMAGE_TAG make library
 		;;
 	so)
 		info "building linux dl is not supported for now"
