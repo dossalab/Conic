@@ -7,8 +7,6 @@
 
 include scripts/build.mk
 
-$(call check-defined, BOARD, See 'board' directory for available boards)
-
 ECHO	:= printf "[%s]\t%s\n"
 
 $(call allow-override,HOSTCC,gcc)
@@ -52,28 +50,33 @@ HOSTCFLAGS := \
 HOSTLDFLAGS := \
 	-shared
 
-include board/$(BOARD)/board.mk
-$(call check-defined, MCU, Probably you have selected unsupported board!)
+# check target, we want BOARD variable to be set for firmware builds
+ifneq ($(filter all firmware size flash debug, $(call get-make-targets)),)
+    $(call check-defined, BOARD, See 'board' directory for available boards)
 
-include mcu/$(MCU)/mcu.mk
-$(call check-defined, ARCH)
+    include board/$(BOARD)/board.mk
+    $(call check-defined, MCU, Probably you have selected unsupported board!)
 
-include arch/$(ARCH)/arch.mk
+    include mcu/$(MCU)/mcu.mk
+    $(call check-defined, ARCH)
 
-# MCU_SPECIFIC_HEADER contains mcu-specific stuff
-# Usually inits are hardware-specific, peripheral api is common
-CFLAGS	+= -DMCU_SPECIFIC_HEADER="<mcu/$(MCU)/mcu.h>"
+    include arch/$(ARCH)/arch.mk
 
-# Board-specific header will contain definitions that rest of the program
-# can use (where is leds, where are buttons, etc...)
-CFLAGS	+= -DBOARD_SPECIFIC_HEADER="<board/$(BOARD)/board.h>"
+    # MCU_SPECIFIC_HEADER contains mcu-specific stuff
+    # Usually inits are hardware-specific, peripheral api is common
+    CFLAGS += -DMCU_SPECIFIC_HEADER="<mcu/$(MCU)/mcu.h>"
 
-# ARCH-specific header will contain at least way to disable/enable interrupts
-# to implement some sort of locking
-CFLAGS	+= -DARCH_SPECIFIC_HEADER="<arch/$(ARCH)/arch.h>"
+    # Board-specific header will contain definitions that rest of the program
+    # can use (where is leds, where are buttons, etc...)
+    CFLAGS += -DBOARD_SPECIFIC_HEADER="<board/$(BOARD)/board.h>"
 
-# Export ARCH, MCU, BOARD to C preprocessor just in case...
-CFLAGS	+= -DARCH_$(ARCH) -DMCU_$(MCU) -DBOARD_$(BOARD)
+    # ARCH-specific header will contain at least way to disable/enable interrupts
+    # to implement some sort of locking
+    CFLAGS += -DARCH_SPECIFIC_HEADER="<arch/$(ARCH)/arch.h>"
+
+    # Export ARCH, MCU, BOARD to C preprocessor just in case...
+    CFLAGS += -DARCH_$(ARCH) -DMCU_$(MCU) -DBOARD_$(BOARD)
+endif
 
 all: firmware library
 

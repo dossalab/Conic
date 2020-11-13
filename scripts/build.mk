@@ -42,3 +42,7 @@ obtain-shared-extension = \
 gcc-target = \
     $(lastword $(subst -, ,$(shell $1 -dumpmachine)))
 
+# Assume that make all is default, which is pretty incorrect
+get-make-targets = \
+    $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)
+
