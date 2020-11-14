@@ -19,7 +19,7 @@ jobs:
     - script:
           - make library
     - script:
-          - ./docker-build.sh dll
+          - sudo ./docker-build.sh dll
 
 script:
     - make
