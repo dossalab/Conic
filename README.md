@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/dossalab/Conic.svg?branch=master)](https://travis-ci.org/dossalab/Conic)
 
+(also see https://github.com/dossalab/conic-palace)
+
 # Conic - robot arm firmware (WIP)
 
 Project aims to create robotic arm that can perform operations, controlled from PC, tablet or Raspberry Pi. This is a firmware - heart of the system, code that runs on low-power embedded controller inside the robot. It is by-design cross-platform, and targeted to 32-bit cortex-m microcontrollers like NRF52 or STM32, yet provide some sort of compability to old AVRs (Arduino).
