@@ -43,6 +43,7 @@ CFLAGS	:= \
 LDFLAGS	:= -lm -Wl,--gc-sections
 
 HOSTCFLAGS := \
+	-fPIC \
 	-Wno-format-truncation \
 	-I. \
 	-Wall
