@@ -9,8 +9,10 @@ include scripts/build.mk
 
 ECHO	:= printf "[%s]\t%s\n"
 
-$(call allow-override,HOSTCC,gcc)
-$(call allow-override,HOSTLD,gcc)
+# We support cross-compilation for host targets, useful for windows build
+PREFIX	?= /usr/local
+HOSTCC	:= $(CROSS_COMPILE)gcc
+HOSTLD	:= $(CROSS_COMPILE)gcc
 
 elf	:= conic.elf
 lib	:= host/libconic$(call obtain-shared-extension, $(HOSTCC))
@@ -126,15 +128,15 @@ $(lib) : $(host-objects)
 	@ $(HOSTLD) $^ $(HOSTLDFLAGS) -o $@
 
 install: $(lib)
-	install -m 644 host/libconic.so /usr/local/lib
-	install -m 644 host/libconic.h  /usr/local/include
-	install -m 644 host/libconic.pc /usr/local/lib/pkgconfig
+	install -m 644 $(lib) $(PREFIX)/lib
+	install -m 644 host/libconic.h  $(PREFIX)/include
+	install -m 644 host/libconic.pc $(PREFIX)/lib/pkgconfig
 	ldconfig
 
 uninstall:
-	$(RM) /usr/local/lib/libconic.so
-	$(RM) /usr/local/include/libconic.h
-	$(RM) /usr/local/lib/pkgconfig/libconic.pc
+	$(RM) $(PREFIX)/lib/$(notdir $(lib))
+	$(RM) $(PREFIX)/include/libconic.h
+	$(RM) $(PREFIX)/lib/pkgconfig/libconic.pc
 	ldconfig
 
 clean:
