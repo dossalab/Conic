@@ -19,7 +19,7 @@ jobs:
     - script:
           - make library
     - script:
-          - sudo ./docker-build.sh dll
+          - sudo ./docker-build.sh CROSS_COMPILE=x86_64-w64-mingw32- library
 
 script:
     - make
