@@ -25,7 +25,7 @@
 int API_EXPORT conic_open(void);
 int API_EXPORT conic_is_open(int fd);
 int API_EXPORT conic_move(int fd, int16_t x, int16_t y, int16_t z);
-int API_EXPORT conic_park(int fd, int16_t x, int16_t y, int16_t z);
+int API_EXPORT conic_park(int fd);
 void API_EXPORT conic_close(int fd);
 
 #endif
