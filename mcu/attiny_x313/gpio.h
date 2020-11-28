@@ -13,9 +13,9 @@
 #include <stdint.h>
 
 /* Not sure about this SFR fuzz but that ones with SFR offset (0x20) */
-#define GPIOB_BASE	0x23
-#define GPIOC_BASE	0x26
-#define GPIOD_BASE	0x29
+#define GPIOD_BASE	0x30
+#define GPIOB_BASE	0x36
+#define GPIOA_BASE	0x39
 
 struct gpio {
 	volatile uint8_t PIN;
@@ -23,9 +23,9 @@ struct gpio {
 	volatile uint8_t PORT;
 };
 
-#define GPIOB	((struct gpio*)GPIOB_BASE)
-#define GPIOC	((struct gpio*)GPIOC_BASE)
 #define GPIOD	((struct gpio*)GPIOD_BASE)
+#define GPIOB	((struct gpio*)GPIOB_BASE)
+#define GPIOA	((struct gpio*)GPIOA_BASE)
 
 #endif
 
