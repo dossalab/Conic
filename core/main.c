@@ -9,25 +9,22 @@
 
 #include <board/common.h>
 #include <core/serial.h>
-#include <core/tasks.h>
-#include <core/arm.h>
-
 #include <arch/common.h>
 #include <mcu/common.h>
 #include <drivers/servo.h>
+#include <core/arm.h>
 
 void main(void)
 {
 	board_init();
 	serial_system_init();
 	servo_system_init();
-	task_system_init();
 	arm_init();
 
 	irq_enable();
 
 	while (1) {
-		tasks_update();
+		serial_execute_pending();
 	}
 }
 

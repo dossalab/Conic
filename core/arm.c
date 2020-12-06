@@ -11,14 +11,11 @@
 #include <stdlib.h> /* for abs */
 #include <math.h>
 #include <core/arm.h>
-#include <core/serial.h>
-#include <core/tasks.h>
 #include <board/common.h>
 #include <drivers/servo.h>
 #include <misc/stuff.h>
 #include <misc/linmath.h>
 #include <misc/endian.h>
-#include <proto/messages.h>
 
 static struct servo servo_1;
 static struct servo servo_2;
@@ -26,8 +23,6 @@ static struct servo servo_3;
 static struct servo servo_4;
 static struct servo servo_5;
 static struct servo servo_6;
-
-static struct serial_handler move_packet_handler;
 
 /*
  * The given angle is in fixed-point radians (0 -> lowest, 6290 -> highest)
@@ -39,10 +34,8 @@ static inline uint16_t angle_to_pulse(uint16_t angle)
 	return angle / 3 + 400;
 }
 
-static void move_callback(void *raw_data)
+void move_packet_handle(struct move_packet_payload *payload)
 {
-	struct move_packet_payload *payload = raw_data;
-
 	payload->s1 = le16_to_cpu(payload->s1);
 	payload->s2 = le16_to_cpu(payload->s2);
 	payload->s3 = le16_to_cpu(payload->s3);
@@ -66,7 +59,5 @@ void arm_init(void)
 	servo_init(&servo_4, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
 	servo_init(&servo_5, BOARD_SERVO_5_PORT, BOARD_SERVO_5_PIN);
 	servo_init(&servo_6, BOARD_SERVO_6_PORT, BOARD_SERVO_6_PIN);
-
-	serial_handle(&move_packet_handler, MOVE_PACKET_ID, move_callback);
 }
 

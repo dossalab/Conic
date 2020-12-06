@@ -11,6 +11,7 @@
 #define ARCH_ARM_ARCH_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef uint32_t atomic_flag_t;
 

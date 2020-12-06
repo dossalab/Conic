@@ -10,6 +10,8 @@
 #ifndef PROTO_MESSAGES_H
 #define PROTO_MESSAGES_H
 
+#include <stdio.h>
+
 #define MOVE_PACKET_ID		0x11
 
 struct move_packet_payload {

@@ -14,6 +14,7 @@
 #define ARCH_COMMON_H
 
 #include <stdbool.h>
+#include <misc/compiler.h>
 
 static inline void irq_enable(void);
 static inline bool irq_disable(void);

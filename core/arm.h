@@ -10,6 +10,9 @@
 #ifndef CORE_ARM_H
 #define CORE_ARM_H
 
+#include <proto/messages.h>
+
+void move_packet_handle(struct move_packet_payload *payload);
 void arm_init(void);
 
 #endif
