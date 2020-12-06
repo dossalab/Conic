@@ -18,10 +18,8 @@ elf	:= conic.elf
 lib	:= host/libconic$(call obtain-shared-extension, $(HOSTCC))
 
 objects	:= \
-	core/arm.o \
 	core/serial.o \
 	core/main.o \
-	core/tasks.o \
 	mcu/common.o \
 	misc/crc7.o \
 	drivers/servo.o
