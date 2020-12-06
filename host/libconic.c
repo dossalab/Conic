@@ -11,56 +11,107 @@
 #include <host/serial.h>
 #include <proto/messages.h>
 #include <proto/packet.h>
-#include <misc/endian.h>
 #include <string.h>
+
+/* TODO: provide a configuration option for that */
+#define ARCH_LITTLE_ENDIAN
+#include <misc/endian.h>
 
 static int enumerate_callback(const char *dev)
 {
-	return serial_open(dev, CONIC_BAUDRATE);
+	int handle;
+
+	handle = serial_open(dev, CONIC_BAUDRATE);
+	if (handle < 0) {
+		return -ENOENT;
+	}
+
+	if (conic_check_presense(handle) < 0) {
+		serial_close(handle);
+		return -ENOENT;
+	}
+
+	return handle;
 }
 
-int conic_open(void)
+static int send_packet(int handle, int packet_id, void *payload, size_t size)
+{
+	struct serial_packet packet;
+	struct serial_packet answer;
+	int written, read;
+
+	packet_fill(&packet, packet_id);
+	memcpy(packet.data, payload, size);
+
+	written = serial_write(handle, &packet, sizeof(packet));
+	if (written != sizeof(packet)) {
+		return -ENOLINK;
+	}
+
+	read = serial_read(handle, &answer, sizeof(answer));
+	if (read != sizeof(answer)) {
+		return -ENOLINK;
+	}
+
+	if (answer.type != DEVICE_ANSWER_PID) {
+		return -EINVAL;
+	}
+
+	return ((struct answer_payload *)answer.data)->retval;
+}
+
+int conic_servo_init(int handle, char port, int8_t pin)
+{
+	struct servo_init_payload payload;
+
+	memset(&payload, 0, sizeof(payload));
+
+	payload.pin = pin;
+	payload.port = port;
+
+	return send_packet(handle, SERVO_INIT_PID, &payload, sizeof(payload));
+}
+
+int conic_servo_move(int handle, uint8_t servo_handle, uint16_t pulse)
+{
+	struct servo_move_payload payload;
+
+	memset(&payload, 0, sizeof(payload));
+
+	payload.servo = servo_handle;
+	payload.pulse = cpu_to_le16(pulse);
+
+	return send_packet(handle, SERVO_MOVE_PID, &payload, sizeof(payload));
+}
+
+int conic_execute_motion(int handle)
+{
+	struct execute_motion_payload payload;
+
+	memset(&payload, 0, sizeof(payload));
+	/* no arguments */
+
+	return send_packet(handle, EXECUTE_MOTION_PID, &payload, sizeof(payload));
+}
+
+int conic_check_presense(int handle)
+{
+	struct check_presense_payload payload;
+
+	memset(&payload, 0, sizeof(payload));
+
+	return send_packet(handle, CHECK_PRESENSE_PID, &payload, sizeof(payload));
+}
+
+int conic_device_open(void)
 {
 	return serial_enumerate(enumerate_callback);
 }
 
-int conic_is_open(int fd)
+void conic_device_close(int handle)
 {
-	if (!serial_is_open(fd)) {
-		return -1;
+	if (handle >= 0) {
+		serial_close(handle);
 	}
-
-	return 0;
-}
-
-int conic_move(int fd, int16_t x, int16_t y, int16_t z)
-{
-	struct serial_packet packet;
-	struct move_packet_payload payload;
-	int written;
-
-	payload.x = cpu_to_le16(x);
-	payload.y = cpu_to_le16(y);
-	payload.z = cpu_to_le16(z);
-
-	packet_fill(&packet, MOVE_PACKET_ID);
-	memcpy(packet.data, &payload, sizeof(struct move_packet_payload));
-
-	written = serial_write(fd, (const uint8_t *)&packet, sizeof(packet));
-	if (written != sizeof(packet)) {
-		return -1;
-	}
-
-	return 0;
-}
-
-int conic_park(int fd)
-{
-	return -1;
-}
-
-void conic_close(int fd)
-{
-	serial_close(fd);
 }
 

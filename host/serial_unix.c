@@ -90,19 +90,14 @@ exit:
 	return fd;
 }
 
-int serial_write(int fd, const uint8_t *data, size_t len)
+int serial_write(int fd, const void *data, size_t len)
 {
 	return write(fd, data, len);
 }
 
-int serial_read(int fd, uint8_t *data, size_t len)
+int serial_read(int fd, void *data, size_t len)
 {
 	return read(fd, data, len);
-}
-
-bool serial_is_open(int fd)
-{
-	return false;
 }
 
 int serial_open(const char *port_name, int baudrate)
@@ -115,7 +110,7 @@ int serial_open(const char *port_name, int baudrate)
 		return -1;
 	}
 
-	handle = open(port_name, O_RDWR | O_NOCTTY | O_NDELAY);
+	handle = open(port_name, O_RDWR | O_NOCTTY);
 	if (handle < 0) {
 		return -1;
 	}
@@ -123,12 +118,7 @@ int serial_open(const char *port_name, int baudrate)
 	memset(&config, 0, sizeof(config));
 	tcgetattr(handle, &config);
 
-	config.c_iflag &= ~(INLCR | ICRNL);
-	config.c_iflag |= IGNPAR | IGNBRK;
-	config.c_oflag &= ~(OPOST | ONLCR | OCRNL);
-	config.c_cflag &= ~(PARENB | PARODD | CSTOPB | CSIZE | CRTSCTS);
-	config.c_cflag |=  CLOCAL | CREAD | CS8;
-	config.c_lflag &= ~(ICANON | ISIG | ECHO);
+	cfmakeraw(&config);
 
 	config.c_cc[VTIME] = SERIAL_READ_TIMEOUT / 100;
 	config.c_cc[VMIN]  = 0;

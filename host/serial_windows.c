@@ -108,33 +108,28 @@ static HANDLE get_windows_handle(int handle)
 	return INVALID_HANDLE_VALUE;
 }
 
-int serial_write(int handle, const uint8_t *data, size_t len)
+int serial_write(int handle, const void *data, size_t len)
 {
 	unsigned long amount;
 	HANDLE windows_handle;
 
 	amount = 0;
 	windows_handle = get_windows_handle(handle);
-	WriteFile(windows_handle, (const void *)data, len, &amount, NULL);
+	WriteFile(windows_handle, data, len, &amount, NULL);
 
 	return amount;
 }
 
-int serial_read(int handle, uint8_t *data, size_t len)
+int serial_read(int handle, void *data, size_t len)
 {
 	unsigned long amount;
 	HANDLE windows_handle;
 
 	amount = 0;
 	windows_handle = get_windows_handle(handle);
-	ReadFile(windows_handle, (void *)data, len, &amount, NULL);
+	ReadFile(windows_handle, data, len, &amount, NULL);
 
 	return amount;
-}
-
-bool serial_is_open(int fd)
-{
-	return false;
 }
 
 int serial_open(const char *port_name, int baudrate)

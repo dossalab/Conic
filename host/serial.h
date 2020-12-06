@@ -14,20 +14,46 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/* in milliseconds */
-#define SERIAL_READ_TIMEOUT	100
+#define SERIAL_READ_TIMEOUT	100 /* milliseconds */
 
 /*
- * callback should return -1 to continue enumeration,
- * or positive value (valid file descriptor) to end it;
- * in that case serial_enumerate will return that descriptor
+ * Scans list of available ports, calls callback for each of them
+ *
+ * args:
+ *   callback - pointer to user function (int ...(const char *portname)).
+ *            callback should return negative value to continue enumeration,
+ *            or positive value (valid file descriptor) to end it
+ *
+ * return:
+ *   if callback returns positive value, function will return that value;
+ *   negative value otherwise
  */
 int serial_enumerate(int (*callback)(const char *));
 
-int serial_write(int handle, const uint8_t *data, size_t len);
-int serial_read(int handle, uint8_t *data, size_t len);
+/*
+ * For both read and write:
+ *
+ * args:
+ *   handle - serial port handle (see serial_open)
+ *   data - pointer to buffer with/for data
+ *   len - length of the buffer
+ *
+ * return: number of bytes read / written, or negative value in case of an error
+ */
+int serial_write(int handle, const void *data, size_t len);
+int serial_read(int handle, void *data, size_t len);
+
+/*
+ * Opens a given port_name with baudrate. port_name is '/dev/ttyX' on linux,
+ * COMx on windows. Note that ports higher than 9 should look like \\.\COMx
+ *
+ * return: port handle (integer) or negative value in case of an error
+ */
 int serial_open(const char *port_name, int baudrate);
-bool serial_is_open(int fd);
+
+/*
+ * Flush and close the port. handle is serial port handle (see serial_open)
+ */
 void serial_close(int handle);
 
 #endif
