@@ -17,3 +17,7 @@ void arch_timer_init(void (*timer_handler)(void));
 
 #include ARCH_SPECIFIC_HEADER
 
+/* atomic_flag_t is implementation-specific */
+static inline atomic_flag_t atomic_flag_fetch_and_set(atomic_flag_t *flag);
+static inline void atomic_flag_clr(atomic_flag_t *flag);
+

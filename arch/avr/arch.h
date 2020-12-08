@@ -12,6 +12,9 @@
 
 #include <stdint.h>
 #include <avr/interrupt.h>
+#include <misc/compiler.h>
+
+typedef uint8_t atomic_flag_t;
 
 static inline void irq_enable(void)
 {
@@ -27,5 +30,26 @@ static inline bool irq_disable(void)
 
 	return !!(saved_sreg & SREG_I);
 }
+
+static inline atomic_flag_t atomic_flag_fetch_and_set(atomic_flag_t *flag)
+{
+	atomic_flag_t value;
+
+	barrier();
+
+	value = *flag;
+	*flag = 1;
+
+	barrier();
+
+	return value;
+}
+
+static inline void atomic_flag_clr(atomic_flag_t *flag)
+{
+	*flag = 0;
+	barrier();
+}
+
 #endif
 

@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 
+typedef uint32_t atomic_flag_t;
+
 static inline void irq_enable(void)
 {
 	asm volatile ("cpsie i" ::: "memory", "cc");
@@ -27,6 +29,16 @@ static inline bool irq_disable(void)
 		: "=r" (saved_primask) :: "memory", "cc");
 
 	return !saved_primask;
+}
+
+static inline atomic_flag_t atomic_flag_fetch_and_set(atomic_flag_t *flag)
+{
+	return __sync_fetch_and_or(flag, 1);
+}
+
+static inline void atomic_flag_clr(atomic_flag_t *flag)
+{
+	__sync_fetch_and_and(flag, 0);
 }
 
 #endif
