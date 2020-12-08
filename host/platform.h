@@ -17,6 +17,12 @@
 #define SERIAL_READ_TIMEOUT	100 /* milliseconds */
 
 /*
+ * Time functions (for ratelimiting)
+ */
+uint32_t time_current_ms(void);
+void time_sleep_ms(uint32_t ms);
+
+/*
  * Scans list of available ports, calls callback for each of them
  *
  * args:

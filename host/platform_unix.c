@@ -18,8 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <time.h>
 
-#include "serial.h"
+#include "platform.h"
 
 static const char *serial_bases[] = {
 	"ttyACM", "ttyUSB", NULL
@@ -47,6 +48,25 @@ static int baudrate_to_flags(int baudrate)
 		case 230400:	return B230400;
 		default:	return -1;
 	}
+}
+
+uint32_t time_current_ms(void)
+{
+	struct timespec ts;
+
+	clock_gettime(CLOCK_REALTIME, &ts);
+
+	return ts.tv_sec * 1000 + ts.tv_nsec / 1e6;
+}
+
+void time_sleep_ms(uint32_t ms)
+{
+	struct timespec ts;
+
+	ts.tv_sec = ms / 1000;
+	ts.tv_nsec = (ms % 1000) * 1000000;
+
+	nanosleep(&ts, NULL);
 }
 
 static bool contains_base(const char *string, const char *base)

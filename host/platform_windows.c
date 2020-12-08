@@ -14,10 +14,29 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "serial.h"
+#include "platform.h"
 
 #define MAX_WINDOWS_HANDLES	16
 static HANDLE windows_handles[MAX_WINDOWS_HANDLES];
+
+uint32_t time_current_ms(void)
+{
+	LARGE_INTEGER frequency, counter;
+	BOOL use_qpc = QueryPerformanceFrequency(&frequency);
+
+	if (use_qpc) {
+		QueryPerformanceCounter(&counter);
+		return (1000LL * counter.QuadPart) / frequency.QuadPart;
+	} else {
+		/* Not accurate at all */
+		return GetTickCount();
+	}
+}
+
+void time_sleep_ms(uint32_t ms)
+{
+	Sleep(ms);
+}
 
 static int store_windows_handle(HANDLE handle)
 {

@@ -27,8 +27,8 @@ objects	:= \
 # compile both windows and linux objects - there are appropriate checks inside
 host-objects := \
 	host/libconic.o \
-	host/serial_windows.o \
-	host/serial_unix.o
+	host/platform_windows.o \
+	host/platform_unix.o
 
 # FIXME: is -Wno-discarded-qualifiers really a good idea?
 CFLAGS	:= \

@@ -8,7 +8,7 @@
  */
 
 #include "libconic.h"
-#include <host/serial.h>
+#include <host/platform.h>
 #include <proto/messages.h>
 #include <proto/packet.h>
 #include <string.h>
@@ -16,6 +16,8 @@
 /* TODO: provide a configuration option for that */
 #define ARCH_LITTLE_ENDIAN
 #include <misc/endian.h>
+
+#define SERIAL_RATE_LIMIT	5 /* ms */
 
 static int enumerate_callback(const char *dev)
 {
@@ -34,6 +36,30 @@ static int enumerate_callback(const char *dev)
 	return handle;
 }
 
+static int limited_serial_write(int handle, const void *data, size_t len)
+{
+	int elapsed;
+	uint32_t now;
+	static uint32_t past;
+	int ret;
+
+	now = time_current_ms();
+	elapsed = now - past;
+
+	if (elapsed < SERIAL_RATE_LIMIT) {
+		if (elapsed < 0) {
+			elapsed = 0;
+		}
+
+		time_sleep_ms(SERIAL_RATE_LIMIT - elapsed);
+	}
+
+	ret = serial_write(handle, data, len);
+	past = time_current_ms();
+
+	return ret;
+}
+
 static int send_packet(int handle, int packet_id, void *payload, size_t size)
 {
 	struct serial_packet packet;
@@ -43,7 +69,7 @@ static int send_packet(int handle, int packet_id, void *payload, size_t size)
 	packet_fill(&packet, packet_id);
 	memcpy(packet.data, payload, size);
 
-	written = serial_write(handle, &packet, sizeof(packet));
+	written = limited_serial_write(handle, &packet, sizeof(packet));
 	if (written != sizeof(packet)) {
 		return -ENOLINK;
 	}
