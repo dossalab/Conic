@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include <avr/interrupt.h>
 
+typedef uint8_t atomic_flag_t;
+
 static inline void irq_enable(void)
 {
 	asm volatile ("sei" ::: "memory", "cc");
@@ -27,5 +29,6 @@ static inline bool irq_disable(void)
 
 	return !!(saved_sreg & SREG_I);
 }
+
 #endif
 

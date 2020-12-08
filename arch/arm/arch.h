@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 
+typedef uint32_t atomic_flag_t;
+
 static inline void irq_enable(void)
 {
 	asm volatile ("cpsie i" ::: "memory", "cc");
