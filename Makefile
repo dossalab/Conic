@@ -20,6 +20,7 @@ lib	:= host/libconic$(call obtain-shared-extension, $(HOSTCC))
 objects	:= \
 	core/serial.o \
 	core/main.o \
+	core/mm.o \
 	mcu/common.o \
 	misc/crc7.o \
 	drivers/servo.o

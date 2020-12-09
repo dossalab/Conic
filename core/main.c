@@ -9,6 +9,7 @@
 
 #include <board/common.h>
 #include <core/serial.h>
+#include <core/mm.h>
 #include <arch/common.h>
 #include <mcu/common.h>
 #include <drivers/servo.h>
@@ -18,6 +19,7 @@ void main(void)
 	board_init();
 	serial_system_init();
 	servo_system_init();
+	mm_system_init();
 
 	irq_enable();
 

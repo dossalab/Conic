@@ -66,3 +66,15 @@ void gpio_af(struct gpio *bank, uint8_t pin)
 	}
 }
 
+struct gpio *gpio_lookup_by_name(char name)
+{
+	switch (name) {
+		case 'A': return GPIOA;
+		case 'B': return GPIOB;
+		case 'C': return GPIOC;
+		case 'D': return GPIOD;
+	}
+
+	return NULL;
+}
+

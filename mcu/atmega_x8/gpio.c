@@ -45,3 +45,14 @@ void gpio_out(struct gpio *bank, uint8_t pin)
 	bank->DDR |= (1 << pin);
 }
 
+struct gpio *gpio_lookup_by_name(char name)
+{
+	switch (name) {
+		case 'B': return GPIOB;
+		case 'C': return GPIOC;
+		case 'D': return GPIOD;
+	}
+
+	return NULL;
+}
+
