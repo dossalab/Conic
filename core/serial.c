@@ -8,6 +8,7 @@
  */
 
 #include <core/serial.h>
+#include <core/mm.h>
 #include <misc/ring.h>
 #include <arch/common.h>
 #include <mcu/common.h>
@@ -49,19 +50,33 @@ static void send_answer(int8_t answer)
 	uart_send((uint8_t *)&packet, sizeof(packet));
 }
 
-static int8_t execute_servo_init(struct serial_packet *p)
+static int8_t execute_servo_init(struct serial_packet *packet)
 {
-	return 0;
+	struct servo_init_payload *payload;
+	struct gpio *port;
+
+	payload = (struct servo_init_payload *)packet->data;
+	port = gpio_lookup_by_name(payload->port);
+
+	if (!port) {
+		return -1;
+	}
+
+	return mm_create_servo(port, payload->pin);
 }
 
-static int8_t execute_servo_move(struct serial_packet *p)
+static int8_t execute_servo_move(struct serial_packet *packet)
 {
-	return 0;
+	struct servo_move_payload *payload;
+
+	payload = (struct servo_move_payload *)packet->data;
+
+	return mm_move_servo(payload->servo, payload->pulse);
 }
 
 static int8_t execute_motion(struct serial_packet *p)
 {
-	return 0;
+	return mm_execute_motion();
 }
 
 void serial_execute_pending(void)

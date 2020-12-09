@@ -38,6 +38,9 @@ void gpio_toggle(struct gpio *bank, uint8_t pin);
 void gpio_in(struct gpio *bank, uint8_t pin);
 void gpio_out(struct gpio *bank, uint8_t pin);
 
+/* return a pointer to gpio bank using char mnemonic ('A' -> GPIOA, etc) */
+struct gpio *gpio_lookup_by_name(char name);
+
 /*
  * At least 16 bit microsecond resolution timer
  */

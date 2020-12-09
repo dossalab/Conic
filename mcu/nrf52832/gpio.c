@@ -53,3 +53,12 @@ void gpio_out(struct gpio *bank, uint8_t pin)
 	bank->DIR |= (1 << pin);
 }
 
+struct gpio *gpio_lookup_by_name(char name)
+{
+	switch (name) {
+		case '0': return NRF_P0;
+	}
+
+	return NULL;
+}
+
