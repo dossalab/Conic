@@ -20,155 +20,53 @@
 #include <misc/endian.h>
 #include <proto/messages.h>
 
-#define AXIS_COUNT	6
+static struct servo servo_1;
+static struct servo servo_2;
+static struct servo servo_3;
+static struct servo servo_4;
+static struct servo servo_5;
+static struct servo servo_6;
 
-struct axis {
-	int16_t start, end, delta;
-	int16_t value, error, sign;
-	struct servo servo;
-};
-
-struct motion {
-	struct axis *driving_axis;
-	struct axis axes[AXIS_COUNT];
-};
-
-/* settings are in mm */
-static vec3 current_position = mkvec3(100, 0, 0);
-static struct motion motion_logic;
-static struct task motion_tick_task;
 static struct serial_handler move_packet_handler;
 
-static void motion_update(struct motion *m)
-{
-	struct axis *a;
-
-	for (int i = 0; i < AXIS_COUNT; i++) {
-		a = &(m->axes[i]);
-
-		servo_set(&a->servo, a->value);
-
-		if (a->value != a->end) {
-			a->error += a->delta;
-			if (2 * a->error >= m->driving_axis->delta) {
-				a->value += a->sign;
-				a->error -= m->driving_axis->delta;
-			}
-		}
-	}
-}
-
-static void motion_execute(struct motion *m)
-{
-	struct axis *a;
-	int max_index;
-	int16_t max_delta = -1;
-
-	for (int i = 0; i < AXIS_COUNT; i++) {
-		a = &(m->axes[i]);
-
-		a->delta = abs(a->end - a->start);
-		a->value = a->start;
-		a->error = 0;
-		a->sign = (a->end > a->start)? 1 : -1;
-
-		if (a->delta > max_delta) {
-			max_delta = a->delta;
-			max_index = i;
-		}
-	}
-
-	m->driving_axis = &(m->axes[max_index]);
-}
-
 /*
- * For now all the calculation is hardcoded here for our specific
- * robot configuration.
+ * The given angle is in fixed-point radians (0 -> lowest, 3141 -> highest)
+ * Also, this is very servo-dependent
  */
-static void point_calculate(vec3 point, float angles[static AXIS_COUNT])
-{
-	float rp, rf;
-
-	rp = sqrtf(point.x * point.x + point.y * point.y);
-	rf = sqrtf(point.x * point.x + point.y * point.y + point.z * point.z);
-
-	angles[0] = M_PI;
-	angles[1] = 0;
-	angles[2] = M_PI;
-	angles[3] = 0;
-	angles[4] = 0;
-	angles[5] = M_PI;//asinf(point.y / rp);
-}
-
-/* This is very servo-dependent... */
-static inline uint16_t angle_to_pulse(float angle)
+static inline uint16_t angle_to_pulse(uint16_t angle)
 {
 	/* approx 400 - 2400 */
-	return 636.6f * angle + 400.f;
-}
-
-/*
- * It's totally redundant to re-calculate both points every time here,
- * yet we do it here. Better save angles somewhere and use them rather then
- * re-creating last point every time
- */
-static void motion_calculate(struct motion *m, vec3 start, vec3 end)
-{
-	float angles_end[AXIS_COUNT];
-	float angles_start[AXIS_COUNT];
-
-	point_calculate(end, angles_end);
-	point_calculate(start, angles_start);
-
-	for (int i = 0;  i < AXIS_COUNT; i++) {
-		m->axes[i].end = angle_to_pulse(angles_end[i]);
-		m->axes[i].start = angle_to_pulse(angles_start[i]);
-	}
-}
-
-static void move_from_current(struct motion *m, vec3 target_position)
-{
-	motion_calculate(m, current_position, target_position);
-	motion_execute(m);
-
-	/* TODO: We should update target position in realtime, really */
-	current_position = target_position;
+	return angle * 2 / 3 + 400.f;
 }
 
 static void move_callback(void *raw_data)
 {
-	struct move_packet_payload *payload;
+	struct move_packet_payload *payload = raw_data;
 
-	payload = raw_data;
-	payload->x = le16_to_cpu(payload->x);
-	payload->y = le16_to_cpu(payload->y);
-	payload->z = le16_to_cpu(payload->z);
+	payload->s1 = le16_to_cpu(payload->s1);
+	payload->s2 = le16_to_cpu(payload->s2);
+	payload->s3 = le16_to_cpu(payload->s3);
+	payload->s4 = le16_to_cpu(payload->s4);
+	payload->s5 = le16_to_cpu(payload->s5);
+	payload->s6 = le16_to_cpu(payload->s6);
 
-	move_from_current(&motion_logic, \
-			mkvec3(payload->x, payload->y, payload->z));
-}
-
-static void motion_tick(void)
-{
-	/* TODO: We can calculate acceleration and update it here */
-	motion_update(&motion_logic);
+	servo_set(&servo_1, angle_to_pulse(payload->s1));
+	servo_set(&servo_2, angle_to_pulse(payload->s2));
+	servo_set(&servo_3, angle_to_pulse(payload->s3));
+	servo_set(&servo_4, angle_to_pulse(payload->s4));
+	servo_set(&servo_5, angle_to_pulse(payload->s5));
+	servo_set(&servo_6, angle_to_pulse(payload->s6));
 }
 
 void arm_init(void)
 {
-	struct axis *axes = motion_logic.axes;
-
-	servo_init(&axes[0].servo, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
-	servo_init(&axes[1].servo, BOARD_SERVO_2_PORT, BOARD_SERVO_2_PIN);
-	servo_init(&axes[2].servo, BOARD_SERVO_3_PORT, BOARD_SERVO_3_PIN);
-	servo_init(&axes[3].servo, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
-	servo_init(&axes[4].servo, BOARD_SERVO_5_PORT, BOARD_SERVO_5_PIN);
-	servo_init(&axes[5].servo, BOARD_SERVO_6_PORT, BOARD_SERVO_6_PIN);
-
-	/* Make a dummy move to initialize everything */
-	move_from_current(&motion_logic, mkvec3(-150, 0, 0));
+	servo_init(&servo_1, BOARD_SERVO_1_PORT, BOARD_SERVO_1_PIN);
+	servo_init(&servo_2, BOARD_SERVO_2_PORT, BOARD_SERVO_2_PIN);
+	servo_init(&servo_3, BOARD_SERVO_3_PORT, BOARD_SERVO_3_PIN);
+	servo_init(&servo_4, BOARD_SERVO_4_PORT, BOARD_SERVO_4_PIN);
+	servo_init(&servo_5, BOARD_SERVO_5_PORT, BOARD_SERVO_5_PIN);
+	servo_init(&servo_6, BOARD_SERVO_6_PORT, BOARD_SERVO_6_PIN);
 
 	serial_handle(&move_packet_handler, MOVE_PACKET_ID, move_callback);
-	task_init(&motion_tick_task, motion_tick, 100);
 }
 
