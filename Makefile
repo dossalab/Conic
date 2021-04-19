@@ -21,7 +21,6 @@ objects	:= \
 	core/arm.o \
 	core/serial.o \
 	core/main.o \
-	mcu/common.o \
 	misc/crc7.o \
 	drivers/servo.o
 

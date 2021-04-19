@@ -21,10 +21,7 @@
  */
 
 void uart_on_receive(void (*receive_cb)(uint8_t byte));
-
-void uart_puts(const char *str);
 void uart_send(uint8_t *data, size_t len);
-void uart_printf(const char *fmt, ...);
 
 /*
  * GPIO
