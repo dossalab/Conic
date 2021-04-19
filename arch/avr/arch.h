@@ -11,6 +11,7 @@
 #define ARCH_AVR_ARCH_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <avr/interrupt.h>
 
 typedef uint8_t atomic_flag_t;
