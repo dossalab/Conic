@@ -22,7 +22,7 @@ static inline struct list_node *servo_to_node(struct servo *s) {
 	return &s->node;
 }
 
-static void servo_overflow_handler(void)
+static void servo_overflow_irq(void)
 {
 	struct list_node *ptr;
 	struct servo *s;
@@ -46,7 +46,7 @@ static void servo_overflow_handler(void)
  * We also should not load next compare value if it is equal to current one,
  * so we loop from current node to the end trying to glue same values together
  */
-static void servo_compare_handler(void)
+static void servo_compare_irq(void)
 {
 	struct servo *s;
 	struct list_node *ptr;
@@ -116,8 +116,8 @@ void servo_init(struct servo *s, struct gpio *port, uint8_t pin)
 
 void servo_system_init(void)
 {
-	timer_on_overflow(servo_overflow_handler);
-	timer_on_compare(servo_compare_handler);
+	timer_on_overflow(servo_overflow_irq);
+	timer_on_compare(servo_compare_irq);
 
 	timer_set_overflow(SERVO_PERIOD); /* ~20 ms between overflows */
 

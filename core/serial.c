@@ -25,7 +25,7 @@ static struct serial_packet received_packet;
  * This handler is called from interrupt, hence we're unable to
  * parse packet and execute commands right away.
  */
-static void uart_receive_handler(uint8_t byte)
+static void uart_receive_irq(uint8_t byte)
 {
 	ring_push(&input_ring, byte);
 
@@ -64,6 +64,6 @@ void serial_execute_pending(void)
 void serial_system_init(void)
 {
 	atomic_flag_clr(&packet_filled);
-	uart_on_receive(uart_receive_handler);
+	uart_on_receive(uart_receive_irq);
 }
 
