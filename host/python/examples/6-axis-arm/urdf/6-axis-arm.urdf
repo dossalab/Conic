@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot
+  name="6-axis-arm">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.0058068 0.025571 0.00012298"
+        rpy="0 0 0" />
+      <mass
+        value="0.14295" />
+      <inertia
+        ixx="8.7779E-05"
+        ixy="7.3646E-08"
+        ixz="2.26E-09"
+        iyy="9.2549E-05"
+        iyz="-1.0819E-07"
+        izz="4.5699E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="m1">
+        <color
+          rgba="0.1 0.8 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="bone1">
+    <inertial>
+      <origin
+        xyz="-0.0044525 0.015537 0.011335"
+        rpy="0 0 0" />
+      <mass
+        value="0.046862" />
+      <inertia
+        ixx="1.0032E-05"
+        ixy="4.236E-07"
+        ixz="-7.5711E-08"
+        iyy="1.3968E-05"
+        iyz="1.6428E-09"
+        izz="7.6343E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone1.STL" />
+      </geometry>
+      <material
+        name="m2">
+        <color
+          rgba="1 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base-b1"
+    type="continuous">
+    <origin
+      xyz="-0.028262 0.0010326 0.07283"
+      rpy="1.5706 0.0067432 -1.6656" />
+    <parent
+      link="base_link" />
+    <child
+      link="bone1" />
+    <axis
+      xyz="0 1 0" />
+    <limit effort="30" velocity="1.0" lower="0" upper="3.1415" />
+  </joint>
+  <link
+    name="bone2">
+    <inertial>
+      <origin
+        xyz="0.00323763250189016 0.0509999999999994 -1.13435012077945E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.04999470120887" />
+      <inertia
+        ixx="2.13400487620371E-05"
+        ixy="1.19114008207636E-20"
+        ixz="-5.80429327106009E-19"
+        iyy="3.02874700370539E-05"
+        iyz="-3.1779500922767E-15"
+        izz="4.66029322916944E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone2.STL" />
+      </geometry>
+      <material
+        name="m3">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="b1-b2"
+    type="continuous">
+    <origin
+      xyz="0 0.018289 0.021863"
+      rpy="2.9305 0 3.1416" />
+    <parent
+      link="bone1" />
+    <child
+      link="bone2" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="bone3">
+    <inertial>
+      <origin
+        xyz="0.00268176874958572 -0.00292748301471468 0.0552243997033662"
+        rpy="0 0 0" />
+      <mass
+        value="0.111196198053727" />
+      <inertia
+        ixx="2.37696686276147E-05"
+        ixy="8.47193457163033E-07"
+        ixz="-1.51421696451097E-07"
+        iyy="3.14394184011684E-05"
+        iyz="3.28560544807689E-09"
+        izz="1.69430281501381E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone3.STL" />
+      </geometry>
+      <material
+        name="m4">
+        <color
+          rgba="1 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="b2-b3"
+    type="continuous">
+    <origin
+      xyz="0 0.102 0"
+      rpy="-0.63455 0 0" />
+    <parent
+      link="bone2" />
+    <child
+      link="bone3" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="bone4">
+    <inertial>
+      <origin
+        xyz="0.00414286838318304 0.0345025020044157 1.82616759235588E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0514891800260077" />
+      <inertia
+        ixx="1.29241291508024E-05"
+        ixy="-7.63656057427619E-08"
+        ixz="-2.29827131448453E-13"
+        iyy="1.96647910829352E-05"
+        iyz="3.88626536104378E-09"
+        izz="2.83559566813294E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone4.STL" />
+      </geometry>
+      <material
+        name="m5">
+        <color
+          rgba="0 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="b3-b4"
+    type="continuous">
+    <origin
+      xyz="0 0 0.13051"
+      rpy="2.3079 0 0" />
+    <parent
+      link="bone3" />
+    <child
+      link="bone4" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="bone5">
+    <inertial>
+      <origin
+        xyz="-0.0161801851012315 0.0120978915750662 -0.0391093315449677"
+        rpy="0 0 0" />
+      <mass
+        value="0.0474629588945181" />
+      <inertia
+        ixx="6.30023735831064E-06"
+        ixy="1.1301397518622E-07"
+        ixz="9.84918390028273E-09"
+        iyy="8.9758074262833E-06"
+        iyz="-3.02362866586572E-10"
+        izz="1.00017511080645E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone5.STL" />
+      </geometry>
+      <material
+        name="m6">
+        <color
+          rgba="0 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://6-axis-arm/meshes/bone5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="b4-b5"
+    type="continuous">
+    <origin
+      xyz="0.013076 0.055014 3.5745E-05"
+      rpy="-1.5708 0.065035 3.1416" />
+    <parent
+      link="bone4" />
+    <child
+      link="bone5" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+</robot>

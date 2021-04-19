@@ -1,5 +1,5 @@
 Name: libconic
 Description: A library for controlling Conic firmware
-Version: 0.2
-Libs: -L${libdir} -lconic
-Cflags: -I${includedir}
+Version: 1.0.1
+Libs: -lconic
+Cflags:
