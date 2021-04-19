@@ -20,13 +20,13 @@ static struct servo servo_5;
 static struct servo servo_6;
 
 /*
- * The given angle is in fixed-point radians (0 -> lowest, 6290 -> highest)
+ * The given angle is in fixed-point radians (0 -> lowest, 3141 -> highest)
  * Also, this is very servo-dependent
  */
 static inline uint16_t angle_to_pulse(uint16_t angle)
 {
 	/* approx 400 - 2400 */
-	return angle / 3 + 400;
+	return angle * 2 / 3 + 400;
 }
 
 void move_packet_handle(struct move_packet_payload *payload)
