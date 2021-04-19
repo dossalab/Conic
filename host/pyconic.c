@@ -18,7 +18,7 @@ static PyMethodDef PythonMethods[] = {
 
 static struct PyModuleDef pyconic_module = {
 	PyModuleDef_HEAD_INIT,
-	"pyconic",
+	"_pyconic",
 	"Python interface for the libconic",
 	-1,
 	PythonMethods
@@ -74,10 +74,10 @@ static PyObject *pm_close(PyObject *self, PyObject *args)
 	Py_RETURN_NONE;
 }
 
-PyMODINIT_FUNC PyInit_pyconic(void)
+PyMODINIT_FUNC PyInit__pyconic(void)
 {
 	PyObject *Module = PyModule_Create(&pyconic_module);
-	PyconicException = PyErr_NewException("pyconic.PyconicException", \
+	PyconicException = PyErr_NewException("_pyconic.PyconicException", \
 			NULL, NULL);
 
 	PyModule_AddObject(Module, "PyconicExceptuin", PyconicException);
