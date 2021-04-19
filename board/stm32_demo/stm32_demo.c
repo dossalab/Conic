@@ -10,16 +10,6 @@
 #include <board/common.h>
 #include <mcu/common.h>
 
-void board_led_on(void)
-{
-	gpio_clr(BOARD_LED_PORT, BOARD_LED_PIN);
-}
-
-void board_led_off(void)
-{
-	gpio_set(BOARD_LED_PORT, BOARD_LED_PIN);
-}
-
 static inline void board_uart_init(void)
 {
 	rcc_enable_line(RCC_UART1);
@@ -42,18 +32,13 @@ void board_init(void)
 	/* enable alternative function clock */
 	rcc_enable_line(RCC_AFIO);
 
-	/* enable all GPIO clocks */
+	/* enable GPIO clocks */
 	rcc_enable_line(RCC_GPIOA);
-	rcc_enable_line(RCC_GPIOB);
-	rcc_enable_line(RCC_GPIOC);
 
 	/* enable uart */
 	board_uart_init();
 
 	/* enable Timer2 clock (TODO: should this be in timer init itself? */
 	rcc_enable_line(RCC_TIM2);
-
-	gpio_out(BOARD_LED_PORT, BOARD_LED_PIN);
-	board_led_off(); /* LED is active low on this board */
 }
 

@@ -10,9 +10,6 @@
 #ifndef BOARD_STM32_DEMO_H
 #define BOARD_STM32_DEMO_H
 
-#define BOARD_LED_PORT		GPIOC
-#define BOARD_LED_PIN		13
-
 /* Servos */
 #define BOARD_SERVO_1_PORT	GPIOA
 #define BOARD_SERVO_2_PORT	GPIOA
