@@ -54,7 +54,7 @@ static float truncate(float value, float min, float max)
 /* basically convert to milli-radians or something like that */
 static int16_t float_radians_to_fixed(float r)
 {
-	return 1000 * truncate(r, 0, 2 * M_PI);
+	return 1000 * truncate(r, 0, M_PI);
 }
 
 int conic_move(int fd, float s1, float s2, float s3,
