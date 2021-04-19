@@ -87,12 +87,6 @@ class Wrapper:
         if ret < 0:
             raise WrapperException('unable to move arm')
 
-    def park(self):
-        """Park arm in some default, safe position"""
-        ret = self.libconic.conic_park(self.handle)
-        if ret < 0:
-            raise WrapperException('unable to park')
-
 class App(cmd.Cmd, Wrapper):
     """sample shell application - demonstrates libconic usage"""
     prompt = Printer.colored('[conic] ', 'yellow')
@@ -146,13 +140,6 @@ class App(cmd.Cmd, Wrapper):
 
         try:
             self.conic.move(x, y, z)
-        except WrapperException as e:
-            Printer.e(e)
-
-    def do_park(self, _):
-        """park - position arm at park position"""
-        try:
-            self.conic.park()
         except WrapperException as e:
             Printer.e(e)
 

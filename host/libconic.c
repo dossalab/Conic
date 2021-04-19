@@ -14,6 +14,11 @@
 #include <misc/endian.h>
 #include <string.h>
 
+#include <math.h>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 static int enumerate_callback(const char *dev)
 {
 	return serial_open(dev, CONIC_BAUDRATE);
@@ -33,19 +38,45 @@ int conic_is_open(int fd)
 	return 0;
 }
 
-int conic_move(int fd, int16_t s1, int16_t s2, int16_t s3,
-		int16_t s4, int16_t s5, int16_t s6)
+static float truncate(float value, float min, float max)
+{
+	if (value < min) {
+		return min;
+	}
+
+	if (value > max) {
+		return max;
+	}
+
+	return value;
+}
+
+/* basically convert to milli-radians or something like that */
+static int16_t float_radians_to_fixed(float r)
+{
+	return 1000 * truncate(r, 0, 2 * M_PI);
+}
+
+int conic_move(int fd, float s1, float s2, float s3,
+		float s4, float s5, float s6)
 {
 	struct serial_packet packet;
 	struct move_packet_payload payload;
 	int written;
 
-	payload.s1 = cpu_to_le16(s1);
-	payload.s2 = cpu_to_le16(s2);
-	payload.s3 = cpu_to_le16(s3);
-	payload.s4 = cpu_to_le16(s4);
-	payload.s5 = cpu_to_le16(s5);
-	payload.s6 = cpu_to_le16(s6);
+	uint16_t fp_s1 = float_radians_to_fixed(s1);
+	uint16_t fp_s2 = float_radians_to_fixed(s2);
+	uint16_t fp_s3 = float_radians_to_fixed(s3);
+	uint16_t fp_s4 = float_radians_to_fixed(s4);
+	uint16_t fp_s5 = float_radians_to_fixed(s5);
+	uint16_t fp_s6 = float_radians_to_fixed(s6);
+
+	payload.s1 = cpu_to_le16(fp_s1);
+	payload.s2 = cpu_to_le16(fp_s2);
+	payload.s3 = cpu_to_le16(fp_s3);
+	payload.s4 = cpu_to_le16(fp_s4);
+	payload.s5 = cpu_to_le16(fp_s5);
+	payload.s6 = cpu_to_le16(fp_s6);
 
 	packet_fill(&packet, MOVE_PACKET_ID);
 	memcpy(packet.data, &payload, sizeof(struct move_packet_payload));
