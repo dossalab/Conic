@@ -112,10 +112,6 @@ debug: $(elf)
 	@ $(ECHO) DEBUG "$^"
 	@ scripts/debug.sh $(GDB) $(DEBUG_CHIP) $(DEBUG_ADAPTER) $<
 
-shell: $(lib)
-	@ $(ECHO) SHELL "$^"
-	@ host/shell.py
-
 # Host target (non cross-compilation, shared)
 library: $(lib)
 
