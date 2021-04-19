@@ -7,15 +7,10 @@
  * Roman Luitko, 2020
  */
 
-#include <string.h> /* for memset */
-#include <stdlib.h> /* for abs */
-#include <math.h>
-#include <core/arm.h>
 #include <board/common.h>
 #include <drivers/servo.h>
-#include <misc/stuff.h>
-#include <misc/linmath.h>
 #include <misc/endian.h>
+#include "arm.h"
 
 static struct servo servo_1;
 static struct servo servo_2;
