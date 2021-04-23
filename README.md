@@ -1,17 +1,13 @@
 [![Build Status](https://travis-ci.org/dossalab/Conic.svg?branch=master)](https://travis-ci.org/dossalab/Conic)
 
-(also see https://github.com/dossalab/conic-palace)
+# Conic - robot servo controller (WIP)
 
-# Conic - robot arm firmware (WIP)
-
-Project aims to create robotic arm that can perform operations, controlled from PC, tablet or Raspberry Pi. This is a firmware - heart of the system, code that runs on low-power embedded controller inside the robot. It is by-design cross-platform, and targeted to 32-bit cortex-m microcontrollers like NRF52 or STM32, yet provide some sort of compability to old AVRs (Arduino).
+This project aims to create a servo controller. Currently we're able to generate signals for 6 (and probably much more) servos. This software is by-design cross-platform, and targeted to 32-bit cortex-m microcontrollers like NRF52 or STM32, yet provide some sort of compability to old AVRs (Arduino).
+This project is currently used to drive a 6-axis robotic arm. 
 
 ## Abstract
 
-Hardware used inside the robot is based on STM32 blue pill (STM32F103). We use library called libconic to control device - library can be binded to any high-level language. We use python in examples and lean towards control center based on WPF or Unity (.NET / C#).
-Open questions are:
-+ How to position arm? WASD or mouse or coordinates?
-+ Servos need some sort of torque protection, espesially on claw. We anyway need some sort of custom shield / board to implement at least current sensing. Is it better to design a shield for a more modern board with wireless MCU like NRF52 / ESP32?
+Hardware used inside the robot is based on STM32 blue pill (STM32F103). It communicates over serial to a PC (or raspberry pi, or anything, doesn't really matter) We use library called libconic at the host side to control servos. It's written in C, so it can be easily binded to any high-level language. We provide python wrapper as an (functional) example.
 
 ## Building the firmware
 
@@ -31,21 +27,18 @@ To flash ARM-based board or, generally, non-arduino board you should set `FLASH_
 
 ## Interfacing with firmware
 
-You can refer to python examples in `examples` folder
-For a quick demo you can call `make shell` - that will execute `examples/cmdline.py`. Also make sure you've set `SHELL_PORT`
+You can install python package using pip - for example `pip install https://github.com/dossalab/Conic/archive/refs/tags/conic-1.0.2.tar.gz`. Please make sure you have C/C++ compiler installed. On Windows, you may need to download SDK and Visual Studio together with 'Desktop C/C++ workload'. Refer to official python documentation on C extensions in order to get recent information.
+
+Python library usage can be illustrated with a simple example:
+```
+import pyconic
+
+p = pyconic.Conic()
+p.open()
+p.move(0, 0, 0, 0, 0, 0) # 6 angles, in radians
+p.close()
+```
 
 ## envsetup.sh
 
 There are quite a lot of environmental variables used during the build, you may want to set all of them simultaneously. Please refer to `envsetup-sample.sh` - you can copy it to `envsetup.sh` or something, modify it according to your board and source it like that: `source ./envsetup.sh`
-
-## Plans / thoughts
-
-We can design a small joystick-like device with a couple of knobs and buttons. As it turns out, controlling this type of robots with a special input device works much better. Also we can put a small screen on it and use this device to record movements (Position arm, press some checkpoint button, move arm to next position, press checkpoint button, etc...), and then store, share and replay them.
-
-## TODO's (not in priority)
-
-### Cross-compilation
-
-+ Getting builds on windows will be a huge pain since obtaining a gcc compiler is not as easy as obtaining it from a package manager. If somebody bundled make + some shell utilities + arm-gcc in one windows installer that'll be a life-saver.
-+ Move to some sort of cross-platform build system (it should be pretty fast - not some java utility that takes 2 seconds to even load. Also it should support some sort of configuration).
-
