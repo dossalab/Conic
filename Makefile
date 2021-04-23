@@ -122,9 +122,11 @@ $(lib) : $(host-objects)
 	@ $(HOSTLD) $^ $(HOSTLDFLAGS) -o $@
 
 install: $(lib)
-	install -m 644 $(lib) $(PREFIX)/lib
-	install -m 644 host/libconic.h  $(PREFIX)/include
-	install -m 644 host/libconic.pc $(PREFIX)/lib/pkgconfig
+	install -d $(PREFIX)/include
+	install -d $(PREFIX)/lib/pkgconfig
+	install -m 644 $(lib) $(PREFIX)/lib/
+	install -m 644 host/libconic.h  $(PREFIX)/include/
+	install -m 644 host/libconic.pc $(PREFIX)/lib/pkgconfig/
 	ldconfig
 
 uninstall:
