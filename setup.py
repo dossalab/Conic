@@ -16,6 +16,6 @@ setup(
     name = 'pyconic',
     version='1.0',
     ext_modules=[module],
-    package_dir = {'': 'host/python/'},
+    package_dir = {'': 'host/python'},
     packages=['pyconic']
 )
